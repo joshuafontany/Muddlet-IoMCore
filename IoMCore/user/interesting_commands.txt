@@ -1,0 +1,27 @@
+align
+all commands
+all creatures
+	creatureinfo <creature>
+all parties
+all verbs
+combat
+checkeq
+enchantinfo <enchant>
+eq
+events running
+events list
+events help <event_name>
+exits
+i
+kept
+kills
+myslots
+party
+	leader
+	follow
+	status show
+	
+quests
+success_rate
+summary
+terrains

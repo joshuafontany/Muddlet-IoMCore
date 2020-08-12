@@ -1,0 +1,1 @@
+prompt '%^BOLD%^%^GREEN%^%N%^RESET%^ %^CYAN%^%x%^RESET%^(%X) %^ORANGE%^%G%^RESET%^g%RHP%^BOLD%^%^GREEN%^%h%^RESET%^/%^BOLD%^%^GREEN%^%H%^RESET%^ SP%^BOLD%^%^CYAN%^%s%^RESET%^/%^BOLD%^%^CYAN%^%S%^RESET%^ EP%^BOLD%^%^MAGENTA%^%e%^RESET%^/%^BOLD%^%^MAGENTA%^%E%^RESET%^ %^BOLD%^%^GREEN%^$%^RESET%^'

@@ -1,0 +1,318 @@
+{
+  "AC":4,
+  "Guilds":{
+    "omicrom":[],
+    "bravo":[],
+    "alpha":{
+      "woodsman":"15"
+    },
+    "gamma":[]
+  },
+  "Ep":{
+    "Max":784,
+    "Current":784
+  },
+  "Hp":{
+    "Max":1100,
+    "Current":602
+  },
+  "Enemy":"No Enemy",
+  "Hiding":0,
+  "Race":"Lizardman",
+  "Gold":{
+    "Bank":256179,
+    "Current":47937
+  },
+  "EatCorpses":true,
+  "Sp":{
+    "Max":824,
+    "Current":622
+  },
+  "Selector":"first",
+  "InventoryWeight":109,
+  "Wimpy":35,
+  "Spells":{
+    "woodsman":{
+      "spirit wind":61,
+      "rock rain":6,
+      "magical growth":6
+    }
+  },
+  "Poisoned":0,
+  "Epr":0,
+  "RDMPCode":"2332",
+  "GuildName":"",
+  "Mail":{
+    "Total":0,
+    "New":0
+  },
+  "Stealth":0,
+  "ActiveSpell":"",
+  "Skills":{
+    "woodsman":{
+      "herb preservation":6,
+      "hunting":11,
+      "fire building":6,
+      "scavenge wood":31,
+      "doublehit":51,
+      "weapon skill blunt":51,
+      "weapon skill slashing":6,
+      "honor of the gods":6,
+      "herb gathering":6,
+      "build campfire":41,
+      "essence eye":46,
+      "tanking":16,
+      "spirit blessing":41,
+      "attack":61
+    }
+  },
+  "Inventory":{
+    "Armors":[{
+        "quantity":2,
+        "name":"Termite Antennae",
+        "section":"Armors",
+        "kept":false,
+        "worn":false,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Magical woodsman cloak",
+        "section":"Armors",
+        "kept":false,
+        "worn":true,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Pair of stylish Iceleys",
+        "section":"Armors",
+        "kept":true,
+        "worn":true,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Pink gauntlets of intelligence",
+        "section":"Armors",
+        "kept":true,
+        "worn":true,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Yellow robe of endurance regeneration",
+        "section":"Armors",
+        "kept":true,
+        "worn":true,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Small hat",
+        "section":"Armors",
+        "kept":true,
+        "worn":true,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Seaweed scarf",
+        "section":"Armors",
+        "kept":true,
+        "worn":true,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Kelp belt",
+        "section":"Armors",
+        "kept":true,
+        "worn":true,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Small golden ring of power",
+        "section":"Armors",
+        "kept":true,
+        "worn":true,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Cool blue ring of wisdom",
+        "section":"Armors",
+        "kept":true,
+        "worn":true,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Red greaves of intelligence",
+        "section":"Armors",
+        "kept":true,
+        "worn":true,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Brown boots of endurance regeneration",
+        "section":"Armors",
+        "kept":false,
+        "worn":true,
+        "wielded":false
+      }],
+    "Weapons":[{
+        "quantity":1,
+        "name":"Blue frostgiant club",
+        "section":"Weapons",
+        "kept":true,
+        "worn":false,
+        "wielded":false
+      }],
+    "General items":[{
+        "quantity":1,
+        "name":"Small tinderbox",
+        "section":"General items",
+        "kept":true,
+        "worn":false,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Potion bag",
+        "section":"General items",
+        "kept":true,
+        "worn":false,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Gem bag",
+        "section":"General items",
+        "kept":true,
+        "worn":false,
+        "wielded":false
+      },{
+        "quantity":1,
+        "name":"Lodestone bag",
+        "section":"General items",
+        "kept":true,
+        "worn":false,
+        "wielded":false
+      }]
+  },
+  "Stats":{
+    "Str":{
+      "Base":50,
+      "Current":52
+    },
+    "Con":{
+      "Base":45,
+      "Current":47
+    },
+    "Sta":{
+      "Base":43,
+      "Current":43
+    },
+    "Cha":{
+      "Base":121,
+      "Current":123
+    },
+    "Dex":{
+      "Base":65,
+      "Current":65
+    },
+    "Int":{
+      "Base":29,
+      "Current":33
+    },
+    "Wis":{
+      "Base":48,
+      "Current":53
+    }
+  },
+  "Eq":{
+    "Armor":[],
+    "Weapons":[]
+  },
+  "InventoryHeadersFg":{
+    "Armors":{
+      "b":192,
+      "g":192,
+      "r":192
+    },
+    "Gems":{
+      "b":192,
+      "g":192,
+      "r":192
+    },
+    "General items":{
+      "b":192,
+      "g":192,
+      "r":192
+    },
+    "Weapons":{
+      "b":192,
+      "g":192,
+      "r":192
+    }
+  },
+  "Alignment":9,
+  "Scars":1,
+  "Name":"Zethyr",
+  "Aliases":{
+    "Spells":{
+      "grow":"magical growth",
+      "sw":"spirit wind"
+    },
+    "Skills":{
+      "wood":"scavenge wood",
+      "sb":"spirit blessing",
+      "campfire":"build campfire",
+      "fire":"fire building",
+      "hunt":"hunting"
+    }
+  },
+  "Explored":{
+    "Rooms":1114,
+    "NextReward":"55.70",
+    "MudPercent":"6.55"
+  },
+  "Kills":1497,
+  "Loot":true,
+  "Weight":260,
+  "Target":"termite",
+  "Spr":0,
+  "ActiveSkill":"",
+  "InventoryCapacity":71,
+  "CorpseEater":true,
+  "Hunger":100,
+  "OpenLevels":0,
+  "Exp":{
+    "NextAdvLevel":35896,
+    "Current":40812,
+    "NextGuildLevel":35896
+  },
+  "TaskPoints":7,
+  "Level":15,
+  "Growth":1,
+  "EHp":0,
+  "Hpr":0,
+  "InventoryHeadersBg":{
+    "Armors":{
+      "b":0,
+      "g":128,
+      "r":0
+    },
+    "Gems":{
+      "b":128,
+      "g":0,
+      "r":128
+    },
+    "General items":{
+      "b":128,
+      "g":0,
+      "r":0
+    },
+    "Weapons":{
+      "b":0,
+      "g":0,
+      "r":128
+    }
+  },
+  "Title":"",
+  "RDMPStatus":"ON",
+  "Height":"6'6\"",
+  "EatCorpse":false,
+  "DigGrave":false,
+  "Surname":""
+}
