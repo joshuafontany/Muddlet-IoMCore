@@ -1,1 +1,1 @@
-mpackage = "IoMCore-0.1"
+mpackage = "IoMCore-0.1.0"

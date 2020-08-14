@@ -1,0 +1,3402 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE MudletPackage>
+<MudletPackage version="1.001">
+  <ScriptPackage>
+    <ScriptGroup isActive="yes" isFolder="yes">
+  <name>Hotkeys</name>
+      <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+      <Script isActive="yes" isFolder="no">
+  <name>doHotkey</name>
+        <script>Hotkeys = Hotkeys or {
+	[1] = {1, "sw", {}},
+	[2] = {2, "sb", {"myself"}},
+	[3] = {3, "dance", {}},
+	
+}
+
+HotKey0 = {3, "cast stop", {}}
+
+function doHotkey(index)
+	echo("Hotkey "..index)
+  if index == 0 then
+  	local func = Hotkey0[1]
+  	local cmd = Hotkey0[2]
+  	local args = Hotkey0[3]
+		hotkey_functions[func](cmd, args)
+  else
+  	local func = Hotkeys[index][1]
+  	local cmd = Hotkeys[index][2]
+  	local args = Hotkeys[index][3]
+		hotkey_functions[func](cmd, args)
+	end
+end
+
+hotkey_functions={
+	[1] = function(cmd, args) castSpell(spellAlias(cmd), args) end,
+	[2] = function(cmd, args) useSkill(skillAlias(cmd), args) end,
+	[3] = function(cmd, args) send(cmd) end,
+
+}</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+    <ScriptGroup isActive="yes" isFolder="yes">
+  <name>Nav</name>
+      <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+      <Script isActive="yes" isFolder="no">
+  <name>Mapping_Helper_by_JorMox</name>
+        <script>mapAddOns = mapAddOns or {}
+
+local function safeDelete(ids)
+    for _, id in ipairs(ids) do
+        id = tonumber(id)
+        local rooms = {}
+        for _, room in ipairs(getAllRoomEntrances(id)) do
+            for dir, exit in pairs(getRoomExits(room)) do
+                if exit == id then
+                    if rooms[room] then
+                        if type(rooms[room]) == "table" then
+                            table.insert(rooms[room],dir)
+                        else
+                            rooms[room] = {rooms[room], dir}
+                        end
+                    else
+                        rooms[room] = dir
+                    end
+                end
+            end
+        end
+        deleteRoom(id)
+        for rid, dirs in pairs(rooms) do
+            if type(dirs) == "table" then
+                for _, dir in ipairs(dirs) do
+                    setExitStub(rid, dir, true)
+                end
+            else
+                setExitStub(rid, dirs, true)
+            end
+        end
+    end
+    updateMap()
+end
+
+local keys = {['1'] = 'sw', ['2'] = 's', ['3'] = 'se', ['4'] = 'w', ['5'] = 'done', ['6'] = 'e', ['7'] = 'nw',
+    ['8'] = 'n', ['9'] = 'ne', ['Plus'] = 'd', ['Minus'] = 'u'}
+mapAddOns.keysEnabled = false
+mapAddOns.keyIds = mapAddOns.keyIds or {}
+mapAddOns.roomIds = mapAddOns.roomIds or {}
+
+local function toggleMapKeys()
+    mapAddOns.keysEnabled = not mapAddOns.keysEnabled
+    if mapAddOns.keysEnabled then
+        for key, val in pairs(keys) do
+            table.insert(mapAddOns.keyIds, tempKey(mudlet.keymodifier.Keypad, mudlet.key[key],
+                string.format("raiseEvent('tempMapKey','%s')",val)))
+        end
+    else
+        for _,id in ipairs(mapAddOns.keyIds) do
+            killKey(id)
+        end
+        mapAddOns.keyIds = {}
+    end
+end
+
+local coordmap = {
+    n = {0,1,0},    ne = {1,1,0},   nw = {-1,1,0},  e = {1,0,0},    w = {-1,0,0},
+    s = {0,-1,0},   se = {1,-1,0},  sw = {-1,-1,0}, u = {0,0,1},    d = {0,0,-1},
+}
+
+local function shiftRooms(dir)
+    local dx,dy,dz = unpack(coordmap[dir])
+    for _,id in ipairs(mapAddOns.roomIds) do
+        local x,y,z = getRoomCoordinates(id)
+        setRoomCoordinates(id,x+dx,y+dy,z+dz)
+    end
+    updateMap()
+end
+
+function mapAddOns.eventHandler(event, mapEvent, ...)
+    if event == "mapAddOnEvent" then
+        if mapEvent == "safeDelete" then
+            safeDelete(arg)
+        elseif mapEvent == "shiftRooms" then
+            mapAddOns.roomIds = arg
+            toggleMapKeys()
+            cecho("\n&lt;green&gt;Please use the keypad keys to shift the selected rooms around.&lt;reset&gt;")
+        elseif mapEvent == "teleportHere" then
+            if arg.n == 1 then
+                centerview(arg[1])
+            else
+                cecho("\n&lt;red&gt;Cannot teleport to multiple rooms at once.&lt;reset&gt;")
+            end
+        end
+    elseif event == "tempMapKey" and mapAddOns.keysEnabled then
+        if mapEvent == "done" then
+            toggleMapKeys()
+            mapAddOns.roomIds = {}
+            cecho("\n&lt;green&gt;Room shifting completed.&lt;reset&gt;")
+        else
+            shiftRooms(mapEvent)
+        end
+    elseif event == "mapOpenEvent" then
+        local events = {safeDelete = "safe delete", shiftRooms = "shift rooms", teleportHere = "teleport here"}
+        local mapEvents = getMapEvents()
+        for event, name in pairs(events) do
+            if not mapEvents[event] then
+                addMapEvent(event, "mapAddOnEvent","",name)
+            end
+        end
+    end
+end
+
+registerAnonymousEventHandler("mapAddOnEvent","mapAddOns.eventHandler")
+registerAnonymousEventHandler("tempMapKey","mapAddOns.eventHandler")
+registerAnonymousEventHandler("mapOpenEvent","mapAddOns.eventHandler")</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+    <ScriptGroup isActive="yes" isFolder="yes">
+  <name>RDMP</name>
+      <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+      <Script isActive="yes" isFolder="no">
+  <name>doRDMP</name>
+        <script>RDMP.handlers = 
+		{
+			HEALTH = function() doRDMP_Health() end,
+			PARTY_HEALTH = function() doRDMP_PHealth() end,
+			MONSTER_HEALTH = function() doRDMP_MHealth() end,
+			TARGET_DEATH = function() doRDMP_TDeath() end,
+			MONSTER_DEATH = function() doRDMP_MDeath() end,
+			default = function() doRDMP_Default() end
+		}
+
+function doRDMP(data)
+	RDMP.line = data
+	RDMP.args = data:split(" ")
+	switch(RDMP.args[2], RDMP.handlers)()
+end
+
+function doRDMP_Default()
+	display(RDMP.args)
+end
+
+function doRDMP_Health()
+	--display(RDMP.args)
+	Character["Hp"] = {Current = tonumber(RDMP.args[3]), Max = tonumber(RDMP.args[4])}
+	Character["Sp"] = {Current = tonumber(RDMP.args[5]), Max = tonumber(RDMP.args[6])}
+	Character["Ep"] = {Current = tonumber(RDMP.args[7]), Max = tonumber(RDMP.args[8])}
+	Character["Hunger"] = tonumber(RDMP.args[9])
+	update_statusbars()
+end
+
+function doRDMP_PHealth()
+	--display(RDMP.args)
+	stringArray = {}
+	for i=3,#RDMP.args do	
+    table.insert(stringArray, RDMP.args[i])
+  end
+	string = table.concat(stringArray, " ")
+	selectCurrentLine()
+	copy()
+	appendBuffer("ChatPartyStatusConsole")
+end
+
+function doRDMP_MHealth()
+	--display(RDMP.args)
+	
+	if #RDMP.args == 4 then
+		enemyName = RDMP.args[3]
+		Character.Enemy = enemyName
+	elseif #RDMP.args &gt; 4 then
+		enemyName = {}
+		for i=3,#RDMP.args-1 do	
+    	table.insert(enemyName, RDMP.args[i])
+  	end
+		Character.Enemy = table.concat(enemyName, " ")
+	end
+	enemyHp = RDMP.args[#RDMP.args]
+	Character.EHp = tonumber(enemyHp)
+	GUI.EHpBar:setValue(Character.EHp)
+	GUI.EHpBarLabel:echo("&lt;b&gt;"..Character.Enemy.." ("..Character.EHp.."%)&lt;/b&gt;")
+end
+
+function doRDMP_TDeath()
+	Character.Enemy = "No Enemy"
+	Character.EHp = 0
+	GUI.EHpBar:setValue(Character.EHp)
+	GUI.EHpBarLabel:echo("&lt;b&gt;"..Character.Enemy.." ("..Character.EHp.."%)&lt;/b&gt;")
+end
+
+function doRDMP_MDeath()
+	--[[stringArray = {}
+	for i=3,#RDMP.args do	
+    table.insert(stringArray, RDMP.args[i])
+  end
+	string = table.concat(stringArray, " ")
+	send("p' "..string)]]
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+    <ScriptGroup isActive="yes" isFolder="yes">
+  <name>Skills</name>
+      <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+      <Script isActive="yes" isFolder="no">
+  <name>Skill_Aliases</name>
+        <script>function skillAlias(alias)
+	--echo(alias.."\n")
+	local name = Character.Aliases.Skills[alias]
+	if name == nil or name == "" then name = alias end
+	return name
+end
+
+Character.Aliases.Skills = GUI.Aliases.Skills or {
+	["sb"] = "spirit blessing",
+	["wood"] = "scavenge wood",
+	["fire"] = "fire building",
+	["campfire"] = "build campfire",
+	["hunt"] = "hunting"
+}
+
+GUI.Commands.Skills = GUI.Commands.Skills or {
+	["spirit blessing"] = {[1]="Ally"},
+	["scavenge wood"] = {},
+	["fire building"] = {},
+	["hunting"] = {},
+	
+}</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+      <Script isActive="yes" isFolder="no">
+  <name>Use_Skill</name>
+        <script>function useSkill(name, userArgs) 
+    if name then
+          if userArgs == nil then
+              userArgs = {}
+          end
+          local args = GUI.Commands.Skills[name]
+          if not args then args = {} end
+          --display(args)
+          cmd = "use "..name
+          
+          if #args &gt; 0 then	
+              cmd = cmd.." on "..Character.Selector
+          end
+          for index = 1, #args do
+              if userArgs[index] then
+                  cmd = cmd.." "..userArgs[index]
+              else
+                  local t = args[index]
+                  if t == "Enemy" and (Character.Enemy == "" or Character.Enemy == "No Enemy") then
+                      t = "Target"
+                  elseif t == "Ally" and (Character.Ally == nil or Character.Ally == "") then
+                      t = "Name"
+                  end 
+                  if Character[t] then cmd = cmd.." "..Character[t] end
+              end
+          end
+          Character.ActiveSkill = name
+          Character.ActiveSpell = ""
+          send(cmd)
+      end
+  end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+    <ScriptGroup isActive="yes" isFolder="yes">
+  <name>Spells</name>
+      <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+      <Script isActive="yes" isFolder="no">
+  <name>Spell_Aliases</name>
+        <script>function spellAlias(alias)
+	--echo(alias.."\n")
+	local name = Character.Aliases.Spells[alias]
+	if name == nil or name == "" then name = alias end
+	return name
+end
+
+Character.Aliases.Spells = GUI.Aliases.Spells or {
+	["sw"] = "spirit wind",
+	["grow"] = "magical growth"
+}
+
+GUI.Commands.Spells = GUI.Commands.Spells or {
+	["spirit wind"] = {[1]="Enemy"},
+	["magical growth"] = {[1]="Ally"}
+}</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+      <Script isActive="yes" isFolder="no">
+  <name>Cast_Spell</name>
+        <script>function castSpell(name, userArgs) 
+    if name then
+          if userArgs == nil then
+              userArgs = {}
+          end
+          local args = GUI.Commands.Spells[name]
+          if not args then args = {} end
+          --display(args)
+          cmd = "cast "..name
+          
+          if #args &gt; 0 then	
+              cmd = cmd.." on "..Character.Selector
+          end
+          for index = 1, #args do
+              if userArgs[index] then
+                  cmd = cmd.." "..userArgs[index]
+              else
+                  local t = args[index]
+                  if t == "Enemy" and (Character.Enemy == "" or Character.Enemy == "No Enemy") then
+                      t = "Target"
+                  elseif t == "Ally" and (Character.Ally == nil or Character.Ally == "") then
+                      t = "Name"
+                  end 
+                  if Character[t] then cmd = cmd.." "..Character[t] end
+              end
+          end
+          Character.ActiveSkill = ""
+          Character.ActiveSpell = name
+          send(cmd)
+      end
+  end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+    <ScriptGroup isActive="yes" isFolder="yes">
+  <name>_CSSMan</name>
+      <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+      <Script isActive="yes" isFolder="no">
+  <name>CSSMan</name>
+        <script>-- CSSMan by Vadi. Public domain.
+
+CSSMan = {}
+CSSMan.__index = CSSMan
+
+function CSSMan.new(stylesheet)
+  local obj  = { stylesheet = {} }
+  setmetatable(obj,CSSMan)
+  local trim = string.trim
+
+  assert(type(stylesheet) == "string", "CSSMan.new: no stylesheet provided. A possible error is that you might have used CSSMan.new, not CSSMan:new")
+
+  for line in stylesheet:gmatch("[^\r\n]+") do
+    local attribute, value = line:match("^(.-):(.-);$")
+    if attribute and value then
+      attribute, value = trim(attribute), trim(value)
+      obj.stylesheet[attribute] = value
+    end
+  end
+
+  return obj
+end
+
+function CSSMan:set(key, value)
+  self.stylesheet[key] = value
+end
+
+function CSSMan:get(key)
+  return self.stylesheet[key]
+end
+
+function CSSMan:getCSS(key)
+  local lines, concat = {}, table.concat
+  for k,v in pairs(self.stylesheet) do lines[#lines+1] = concat({k,": ", v, ";"}) end
+  return concat(lines, "\n")
+end
+
+function CSSMan:gettable()
+  return self.stylesheet
+end
+
+function CSSMan:settable(tbl)
+  assert(type(tbl) == "table", "CSSMan:settable: table expected, got "..type(tbl))
+
+  self.stylesheet = tbl
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+    <ScriptGroup isActive="yes" isFolder="yes">
+  <name>_Init</name>
+      <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+      <Script isActive="yes" isFolder="no">
+  <name>GUI.init</name>
+        <script>-- Setup all of our lobal objects here --
+
+-- These tables are saved to Json
+Character = Character or {}
+
+Party = Party or {}
+	Party.Roster = Party.Roster or {}
+
+-- Not saved
+GUI = GUI or {}
+	GUI.Initialized = false
+	GUI.Debug = GUI.Debug or false
+	GUI.icons = GUI.icons or {}
+	GUI.greys = GUI.greys or {}
+	GUI.consoles = GUI.consoles or {}
+	GUI.gauges = GUI.gauges or {}
+	GUI.colors = GUI.colors or 
+		{
+  		header = "purple",
+			subheader = "purple",
+    	item = "medium_purple",
+			eq_item = "DarkOrchid",
+    	value = "light_grey",
+    	bonus = "lime_green",
+    	penalty = "red",
+			combat_crit = "LimeGreen",
+			combat_enemycrit = "OrangeRed",
+			skill_start = "DeepSkyBlue",
+			skill_ready = "DeepSkyBlue",
+			spell_start = "MediumPurple",
+			spell_ready = "MediumPurple",
+		}
+	GUI.ConsoleFontSize = GUI.ConsoleFontSize or 10
+	GUI.FontSize = GUI.FontSize or 3
+		
+	GUI.Aliases = GUI.Aliases or {}
+	GUI.Commands = GUI.Commands or {}
+	GUI.Mute = GUI.Mute or {}
+	GUI.CaptureChat = GUI.CaptureChat or true
+	GUI.HideTells = GUI.HideTells or false
+	
+	GUI.InvSection = GUI.InvSection or ""
+	GUI.InventoryHidEq = GUI.InventoryHidEq or false
+
+
+RDMP = RDMP or {}
+	RDMP.handlers = RDMP.handlers or {}
+	
+sys = sys or {};</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+      <Script isActive="yes" isFolder="no">
+  <name>sys.init.lua</name>
+        <script/>
+  <packageName/>
+<eventHandlerList>
+<string>sysExitEvent</string>
+<string>sysLoadEvent</string>
+</eventHandlerList>
+</Script>
+      <Script isActive="yes" isFolder="no">
+  <name>Character_init</name>
+        <script>--RDMP
+Character.RDMPCode = RDMPCode or "2332"
+Character.RDMPStatus = RDMPStatus or "ON"
+--Combat
+Character.Aliases = Character.Aliases or {}
+Character.Target = Character.Target or ""
+Character.Selector = Character.Selector or "first"
+Character.Enemy = Character.Enemy or ""
+Character.Loot = Character.Loot or true
+Character.DigGrave = Character.DigGrave or false
+Character.EatCorpse = Character.EatCorpse or false
+--CharacterConsole
+Character.Name = Character.Name or "UnNamed"
+Character.Surname = Character.Surname or ""
+Character.Title = Character.Title or ""
+Character.GuildName = Character.GuildName or ""
+Character.Race = Character.Race or "Unknown"
+Character.Level = Character.Level or 0
+Character.OpenLevels = Character.OpenLevels or 0
+--Stats
+Character.Stats = Character.Stats or {
+	Str = {Current = 0, Base = 0},
+	Dex = {Current = 0, Base = 0},
+	Con = {Current = 0, Base = 0},
+	Sta = {Current = 0, Base = 0},
+	Int = {Current = 0, Base = 0},
+	Wis = {Current = 0, Base = 0},
+	Cha = {Current = 0, Base = 0},
+}
+Character.Hpr = Character.Hpr or 0
+Character.Spr = Character.Spr or 0
+Character.Epr = Character.Epr or 0
+Character.Hunger = Character.Hunger or 100
+Character.Hp = Character.Hp or {
+	Current = 0,
+	Max = 0
+}
+Character.Sp = Character.Sp or {
+	Current = 0,
+	Max = 0
+}
+Character.Ep = Character.Ep or {
+	Current = 0,
+	Max = 0
+}
+--Traits
+Character.AC = Character.AC or 0
+Character.Wimpy = Character.Wimpy or 30
+Character.Poisoned = Character.Poisoned or 0
+Character.Hiding = Character.Hiding or 0
+Character.Stealth = Character.Stealth or 0
+Character.Height = Character.Height or ""
+Character.Weight = Character.Weight or 0
+Character.Growth = Character.Growth or 0
+Character.Alignment = Character.Alignment or 0
+Character.Scars = Character.Scars or 0
+--GUILDS
+Character.Guilds = Character.Guilds or 
+{
+	alpha = {},
+	gamma = {},
+	bravo = {},
+	omicrom = {}
+}
+--GOLD
+Character.Gold = Character.Gold or {
+	Current = 0,
+	Bank = 0
+}
+--EXP
+Character.Exp = Character.Exp or {
+	Current = 0,
+	NextAdvLevel = 100,
+	NextGuildLevel = 100,		
+}
+--HIGHSCORES
+Character.TaskPoints = Character.TaskPoints or 0
+Character.Kills = Character.Kills or 0
+Character.Explored = Character.Explored or {
+	Rooms = 0,
+	MudPercent = 0,
+	NextReward = 0
+}
+--MAIL
+Character.Mail = Character.Mail or {
+	New = 0,
+	Total = 0
+}
+--EQUIPMENT
+Character.Eq = Character.Eq or {
+	Weapons = {},
+	Armor = {}
+}
+--INVENTORY
+Character.InventoryWeight = Character.InventoryWeight or 0
+Character.InventoryCapacity = Character.InventoryCapacity or 0
+Character.Inventory = Character.Inventory or {}
+Character.InventoryHeadersBg = Character.InventoryHeadersBg or {}
+Character.InventoryHeadersFg = Character.InventoryHeadersFg or {}
+--SKILLS
+Character.Skills = Character.Skills or {}
+--SPELLS
+Character.Spells = Character.Spells or {}
+
+</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+      <Script isActive="yes" isFolder="no">
+  <name>Character_io</name>
+        <script>function Character_io(event)
+    if event == "Load" then
+        cecho("&lt;green&gt;sys&lt;DimGrey&gt;:&lt;white&gt; Character Data Loading..\n")
+        if not json then
+            cecho("&lt;firebrick&gt;json&lt;DimGrey&gt;:&lt;white&gt; json Not Loaded\n")
+            end
+        if GUI.Initialized == false then
+            cecho("&lt;firebrick&gt;sys&lt;DimGrey&gt;:&lt;white&gt; GUI not initialized\n")
+        end
+        --test for character and party files
+        
+        if json and GUI.Initialized == true then
+            local Temp = {Character= {}, Party = {}, Hotkeys = {}}
+            Temp.Character = sys.table(Character.Name..".Character", Character, event)
+            Temp.Party = sys.table(Character.Name..".Party", Party, event)
+              Temp.Hotkeys = sys.table(Character.Name..".Hotkeys", Hotkeys, event)
+            if Temp.Character == nil or Temp.Party == nil then
+                cecho("&lt;firebrick&gt;sys&lt;DimGrey&gt;:&lt;white&gt; Character_load() error with sys.table()\n")
+                return nil
+            elseif Temp.Character == false then  			
+                local saveCharacter = sys.table(Character.Name..".Character", Character, "Save")
+                local saveParty = sys.table(Character.Name..".Party", Party, "Save")
+                  local saveHotkeys = sys.table(Character.Name..".Hotkeys", Hotkeys, "Save")
+                if saveCharacter == true and saveParty == true and saveHotkeys == true then
+                      cecho("&lt;green&gt;sys&lt;DimGrey&gt;:&lt;white&gt; New Save Data created for "..Character.Name.."\n")
+                  end
+                return false
+            else
+                Character = table.deepcopy(Temp.Character)
+                Party = table.deepcopy(Temp.Party)
+                  Hotkeys = table.deepcopy(Temp.Hotkeys)
+                cecho("&lt;green&gt;sys&lt;DimGrey&gt;:&lt;white&gt; Character Data for "..Character.Name.." loaded.\n")
+                return true
+            end	
+        end
+      elseif event == "Save" then
+          local saveCharacter = sys.table(Character.Name..".Character", Character, "Save")
+        local saveParty = sys.table(Character.Name..".Party", Party, "Save")
+          local saveHotkeys = sys.table(Character.Name..".Hotkeys", Hotkeys, "Save")
+        if saveCharacter == true and saveParty == true then cecho("&lt;green&gt;sys&lt;DimGrey&gt;:&lt;white&gt; Data saved for "..Character.Name.."\n") end
+      end	
+  end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+      <Script isActive="yes" isFolder="no">
+  <name>GUI.Lookup_init</name>
+        <script>function testColors(t)
+	for k,v in pairs(t) do
+		cecho("&lt;"..v.."&gt;TEST:"..v.." "..k.."&lt;reset&gt;\n")
+	end
+end
+
+function lookupHunger(h)
+	if not h then return "Starved" end
+	for index = 1, #GUI.Lookup.HungerBreaks-1 do
+		local i = GUI.Lookup.HungerBreaks[index]
+		if i &lt;= h and h &lt; GUI.Lookup.HungerBreaks[index+1] then
+			return GUI.Lookup.Hunger[i]
+		elseif h == 100 then
+			return GUI.Lookup.Hunger[h]
+		end
+	end
+end
+
+function lookupHungerColor(h)
+	local hungerWord = lookupHunger(h)
+	local colorWord = GUI.Lookup.HungerColors[hungerWord] or ""
+	--echo(colorWord.." "..h.."\n")
+	return colorWord
+end
+
+function lookupCapacityColor(c)
+	if c &gt; 0 and c &lt;= 25 then
+		return "lime_green"
+	elseif c &lt; 50 then
+		return "yellow_green"
+	elseif c &lt; 75 then
+		return "yellow"
+	elseif c &lt; 85 then
+		return "dark_orange"
+	else
+		return "red"
+	end
+end
+
+--Mud Specific Values
+
+GUI.Lookup = GUI.Lookup or
+	{
+		StatAb = {
+      ["Str"] = "Strength", ["Strength"] = "Str",
+      ["Dex"] = "Dexterity", ["Dexterity"] = "Dex",
+      ["Con"] = "Constitution", ["Constitution"] = "Con",
+      ["Sta"] = "Stamina", ["Stamina"] = "Sta",
+      ["Wis"] = "Wisdom", ["Wisdom"] = "Wis",
+      ["Int"] = "Intelligence", ["Intelligence"] = "Int",
+      ["Cha"] = "Charisma", ["Charisma"] = "Cha", 
+		},
+		Poisoned = {
+			[0] = "No", ["No"] = 0,
+			[1] = "Yes", ["Yes"] = 1
+		},
+		PoisonedColors = { [0] = "lime_green", [1] = "red"},
+		Hiding = {
+			[0] = "No", ["No"] = 0,
+			[1] = "Yes", ["Yes"] = 1
+		},
+		HidingColors = { "$value", "yellow"},
+		Growth = {
+			[0] = "Growing", ["Growing"] = 0,
+			[1] = "Full", ["Full"] = 1
+		},
+		GrowthColors = {[0] = "yellow", [1] = "lime_green"},
+		Hunger = {
+      [100] = "Stuffed",
+      [95] = "Full",
+      [75] = "Content",
+      [50] = "Peckish",
+      [20] = "Hungry",
+      [10] = "Craving",
+      [2] = "Starving",
+			[0] = "Starved"
+		},
+		HungerBreaks = {0, 2, 10, 20, 50, 75, 95, 100},
+		HungerColors = {
+			["Stuffed"] = "lime_green",
+			["Full"] = "green_yellow",
+			["Content"] = "yellow",
+			["Peckish"] = "dark_orange",
+			["Hungry"] = "orange_red",
+			["Craving"] = "red",
+			["Starving"] = "purple",
+			["Starved"] = "magenta"
+		},
+		Alignment = {
+      [10] = "God Like", ["God Like"] = 10,
+      [9] = "Saint", ["Saint"] = 9,
+      [8] = "Holy man", ["Holy man"] = 8,
+      [7] = "Good", ["Good"] = 7,
+      [6] = "Sli. Good", ["Sli. Good"] = 6,
+      [5] = "Neutral", ["Neutral"] = 5,
+      [4] = "Sli. Evil", ["Sli. Evil"] = 4,
+      [3] = "Evil", ["Evil"] = 3,
+      [2] = "Very Evil", ["Very Evil"] = 2,
+      [1] = "Demonic", ["Demonic"] = 1,
+      [0] = "Satanic", ["Satanic"] = 0
+		},
+		AlignColors = {
+			[0] = "purple",
+			[1] = "red",
+			[2] = "orange_red",
+			[3] = "dark_orange",
+			[4] = "goldenrod",			
+			[5] = "light_goldenrod",
+			[6] = "beige",
+			[7] = "bisque",			
+			[8] = "lavender_blush",
+			[9] = "lavender",
+			[10] = "azure"
+		},
+		AC = {
+      [0] = "None", ["None"] = 0,
+      [1] = "Low", ["Low"] = 1,
+			[2] = "VLow", ["VLow"] = 2,
+      [3] = "Avg", ["Avg"] = 3,
+      [4] = "High", ["High"] = 4,
+      [5] = "Vhigh", ["Vhigh"] = 5,
+      [6] = "Great", ["Great"] = 6,
+      [7] = "Super", ["Super"] = 7,
+      [8] = "BEST", ["BEST"] = 8
+		},
+		ACColors = {
+      [0] = "dark_orange",
+      [1] = "orange",
+      [2] = "yellow",
+      [3] = "green_yellow",
+      [4] = "lime_green",
+      [5] = "spring_green",
+      [6] = "turquoise",
+      [7] = "aquamarine",
+		},
+		Damage = {
+      [0] = "None", ["None"] = 0,
+      [1] = "Almost nothing", ["Almost nothing"] = 1,
+      [2] = "Negligible", ["Negligible"] = 2,
+      [3] = "Noticeable", ["Noticeable"] = 3,
+      [4] = "Extremely low", ["Extremely low"] = 4,
+      [5] = "Very low", ["Very low"] = 5,
+      [6] = "Low", ["Low"] = 6,
+      [7] = "Small", ["Small"] = 7,
+      [8] = "Under average", ["Under average"] = 8,
+      [9] = "Average", ["Average"] = 9,
+      [10] = "Above average", ["Above average"] = 10,
+      [11] = "Important", ["Important"] = 11,
+      [12] = "Impressive", ["Impressive"] = 12,
+      [13] = "High", ["High"] = 13,
+      [14] = "Very high", ["Very high"] = 14,
+      [15] = "Extremely high", ["Extremely high"] = 15,
+      [16] = "Enormous", ["Enormous"] = 16,
+      [17] = "HUGE", ["HUGE"] = 17,
+      [18] = "Incredible", ["Incredible"] = 18
+		},
+		DamageColors = {},
+		DamageType = 
+		{
+			["1"] = "physical", ["physical"] = "1",
+      ["2"] = "psionic", ["psionic"] = "2",
+      ["3"] = "poison", ["poison"] = "3",
+      ["4"] = "cold", ["cold"] = "4",
+      ["5"] = "fire", ["fire"] = "5",
+      ["6"] = "electric", ["electric"] = "6",
+      ["7"] = "magical", ["magical"] = "7",
+      ["8"] = "holy", ["holy"] = "8",
+      ["9"] = "unholy", ["unholy"] = "9",
+      ["10"] = "acid", ["acid"] = "10",
+      ["11"] = "asphyxiation", ["asphyxiation"] = "11"			
+		},
+		DamageTypeAb =
+		{
+			["phys"] = "physical", ["physical"] = "phys",
+      ["psi"] = "psionic", ["psionic"] = "psi",
+      ["pois"] = "poison", ["poison"] = "pois",
+      ["cold"] = "cold", ["cold"] = "cold",
+      ["fire"] = "fire", ["fire"] = "fire",
+      ["elec"] = "electric", ["electric"] = "elec",
+      ["mag"] = "magical", ["magical"] = "mag",
+      ["holy"] = "holy", ["holy"] = "holy",
+      ["unho"] = "unholy", ["unholy"] = "unho",
+      ["acid"] = "acid", ["acid"] = "acid",
+      ["asph"] = "asphyxiation", ["asphyxiation"] = "asph"
+		},
+		DamageTypeColors =
+		{
+
+		},
+		Guilds = {
+    	alpha = {
+    		"martial artist", 
+    		"warrior", 
+    		"abjurer", 
+    		"elemental", 
+    		"evoker", 
+    		"necromancer", 
+    		"weaver", 
+    		"unraveller", 
+    		"druid", 
+    		"woodsman", 
+    		"shapeshifter", 
+    		"psychics", 
+    		"acrobat", 
+    		"lurker"
+    	},
+    	gamma = {
+    		"blacksmith",
+    		"mystic warriors",
+    		"dragonfist fighter",
+    		"traveler",
+    		"knight",
+    		"defender of the crown",
+    		"berserker",
+    		"masters of energy",
+    		"navigator",
+    		"protector of the earth",
+    		"irrifletta",
+    		"air mage",
+    		"earth mage",
+    		"water mage",
+    		"fire mage",
+    		"evoker of ether",
+    		"evoker of elements",
+    		"bone mage",
+    		"voodooist",
+    		"necroscope",
+    		"confessor",
+    		"healer",
+    		"martyr",
+    		"sacrificer",
+    		"magical torturer",
+    		"harmer",
+    		"animal tamer",
+    		"herbalist",
+    		"weather watcher",
+    		"sylvan guard",
+    		"sylvan ward",
+    		"bestial seccedaneum",
+    		"savager",
+    		"telekinetics",
+    		"mystics",
+    		"street brawler",
+    		"bard",
+    		"juggler",
+    		"poison brewer",
+    		"trickster",
+    		"assassin"		
+    	},
+    	bravo = {
+    		"order of the crescent moon",
+    		"toad master",
+    		"tiger master",
+    		"snake master",
+    		"crane master",
+    		"shield master",
+    		"thruster",
+    		"barbarian",
+    		"blade dancer",
+    		"flogger",
+    		"master abjurer",
+    		"master navigators",
+    		"enchanter",
+    		"harbringer of anguish",
+    		"mist mage",
+    		"lava mage",
+    		"evoker of acid",
+    		"evoker of lightning",
+    		"evoker of flames",
+    		"evoker of poison",
+    		"evoker of vacuum",
+    		"evoker of force",
+    		"evoker of ice",
+    		"evoker of magic",
+    		"stydian sorcerer",
+    		"dreadlord",
+    		"scourge",
+    		"embalmer",
+    		"templar",
+    		"exorcist",
+    		"avatar",
+    		"shields of faith",
+    		"servant of shirija",
+    		"servant of lloth",
+    		"servant of talakh",
+    		"servant of mordulak",
+    		"adept of the stones",
+    		"shaman of the soil",
+    		"animal trainer",
+    		"sylvan scout",
+    		"sylvan protector",
+    		"beast lord",
+    		"animal healer",
+    		"cauldron magic",
+    		"psionists",
+    		"oneiromancers",
+    		"watchers of the night",
+    		"bartender",
+    		"minstrel",
+    		"bannerman",
+    		"master assassin",
+    		"disciple of shadow"		
+    	},
+    	omicron = {
+    		"dragon master",
+    		"champion of the crown",
+    		"zerkala maga",
+    		"master of disruption",
+    		"master enchanter",
+    		"guardians",
+    		"nether mage",
+    		"sorcerer",
+    		"blood brother",
+    		"lords of undeath",
+    		"high priest",
+    		"sword of talakh",
+    		"elder of mordulak",
+    		"primate of lloth",
+    		"patriarch of shirija",
+    		"chanter of deep earth",
+    		"sylvan warlord",
+    		"dragon lord",
+    		"talisman magic",
+    		"troubadour",
+    		"gleeman",
+    		"silent hand"
+    	}
+    }
+	}</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+    <ScriptGroup isActive="yes" isFolder="yes">
+  <name>_UI</name>
+      <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+      <ScriptGroup isActive="yes" isFolder="yes">
+  <name>Chat</name>
+        <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+        <Script isActive="yes" isFolder="no">
+  <name>Chat.init</name>
+          <script>-- Big thanks to Jamie W. (Delra) for putting the initial concept together. I just
+-- took what they gave me and made it follow the Geyser patterns and used some lesser
+-- known Geyser utilities to make it a bit more flexible.
+
+demonnic = demonnic or {}
+demonnic.iGauge = demonnic.iGauge or Geyser.Container:new({
+  name = "demonnic.iGaugeClass",
+	value = 100,
+	fillcolor = 'firebrick', --default to a darkish red fill color
+	emptycolor = 'black', --default to a black background
+	bartype = 'bar', 
+	orientation = "horizontal" --only have horizontal but I wanna see if I can figure out vertical.
+})
+
+function demonnic.iGauge:oldsetType(bartype)
+  self.bartype = bartype
+	self.front:setStyleSheet([[
+	  border-image: url(]]..getMudletHomeDir()..'/igauges-1.0/'..self.bartype..[[.png);
+	]])
+end		
+
+function demonnic.iGauge:setType(bartype)
+  self.bartype = bartype
+	self.front:setStyleSheet([[
+	  border-image: url(]]..getMudletHomeDir()..'/images/alphas/'..self.bartype..[[.png);
+	]])
+end	
+		
+function demonnic.iGauge:update(value, foreGround, backGround)
+	value = (value &lt; 2 and value) or value/100
+	if foreGround then self.fillcolor = foreGround end
+	if backGround then self.emptycolor = backGround end
+	local fgr,fgg,fgb = Geyser.Color.parse(self.fillcolor)
+	local bgr,bgg,bgb = Geyser.Color.parse(self.emptycolor)
+	local fgc = table.concat({fgr, fgg, fgb}, ', ')
+	local bgc = table.concat({bgr, bgg, bgb}, ', ')
+	value = tonumber(value)
+	local valm = value-0.02
+	local valp = value+0.02
+	self.back:set('background-color', string.format('qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(%s,255), stop:%.2f rgba(%s, 255), stop:%.2f rgba(%s,255), stop:1 rgba(%s,255))', fgc, valm, fgc, valp, bgc, bgc))
+end
+
+demonnic.iGauge.parent = Geyser.Container
+
+function demonnic.iGauge:new(cons, container)
+	cons = cons or {}
+	cons.type = cons.type or "iGauge"
+	local me = self.parent:new(cons, container)
+	setmetatable(me, self)
+	self.__index = self
+		
+	me.back = Geyser.Label:new({
+		name = me.name ..'_back',
+		x = 0, y = 0,
+		width = '100%', 
+		height = '100%',
+	}, me)
+	me.front = Geyser.Label:new({
+		name = me.name ..'_front', 
+		x = 0, y = 0,
+		width = '100%', 
+		height = '100%',
+	}, me.back)  	
+	me:setType(me.bartype)
+	me:update(me.value, me.fillcolor, me.emptycolor)
+	return me
+end
+</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+      <ScriptGroup isActive="yes" isFolder="yes">
+  <name>Event_Handlers</name>
+        <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+        <Script isActive="yes" isFolder="no">
+  <name>sysWindowResizeEvent</name>
+          <script>-- function called by the temptimer to do the work
+function GUI.handleWindowResize()
+    if (GUI.window_width == nil or GUI.window_height == nil) or (GUI.window_width ~= x or GUI.window_height ~= y) then
+       if GUI.UpdateBorderSizes() then
+           GUI.RefreshResize()
+       end
+   end
+end
+
+-- sysWindowResizeEvent handler
+function GUI.updatecontent( event, x, y )
+   if( GUI.eventtimer ) then killTimer( GUI.eventtimer ) end
+   GUI.eventtimer = tempTimer(0.1, [[killTimer( "GUI.eventtimer" ) GUI.handleWindowResize()]])
+end
+
+-- register our function as an event handler
+registerAnonymousEventHandler("sysWindowResizeEvent", "GUI.updatecontent")</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+        <Script isActive="yes" isFolder="no">
+  <name>sysDisconnectionEvent</name>
+          <script>function GUI.disconnected()
+	killAllTabTimers()
+	-- other stuff --
+	
+end
+
+
+
+-- register our function as an event handler
+registerAnonymousEventHandler("sysDisconnectionEvent", "GUI.disconnected")</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+      <ScriptGroup isActive="yes" isFolder="yes">
+  <name>Guages</name>
+        <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+        <Script isActive="yes" isFolder="no">
+  <name>iguages</name>
+          <script>-- Big thanks to Jamie W. (Delra) for putting the initial concept together. I just
+-- took what they gave me and made it follow the Geyser patterns and used some lesser
+-- known Geyser utilities to make it a bit more flexible.
+
+demonnic = demonnic or {}
+demonnic.iGauge = demonnic.iGauge or Geyser.Container:new({
+  name = "demonnic.iGaugeClass",
+	value = 100,
+	fillcolor = 'firebrick', --default to a darkish red fill color
+	emptycolor = 'black', --default to a black background
+	bartype = 'bar', 
+	orientation = "horizontal" --only have horizontal but I wanna see if I can figure out vertical.
+})
+
+function demonnic.iGauge:oldsetType(bartype)
+  self.bartype = bartype
+	self.front:setStyleSheet([[
+	  border-image: url(]]..getMudletHomeDir()..'/igauges-1.0/'..self.bartype..[[.png);
+	]])
+end		
+
+function demonnic.iGauge:setType(bartype)
+  self.bartype = bartype
+	self.front:setStyleSheet([[
+	  border-image: url(]]..getMudletHomeDir()..'/images/alphas/'..self.bartype..[[.png);
+	]])
+end	
+		
+function demonnic.iGauge:update(value, foreGround, backGround)
+	value = (value &lt; 2 and value) or value/100
+	if foreGround then self.fillcolor = foreGround end
+	if backGround then self.emptycolor = backGround end
+	local fgr,fgg,fgb = Geyser.Color.parse(self.fillcolor)
+	local bgr,bgg,bgb = Geyser.Color.parse(self.emptycolor)
+	local fgc = table.concat({fgr, fgg, fgb}, ', ')
+	local bgc = table.concat({bgr, bgg, bgb}, ', ')
+	value = tonumber(value)
+	local valm = value-0.02
+	local valp = value+0.02
+	self.back:set('background-color', string.format('qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(%s,255), stop:%.2f rgba(%s, 255), stop:%.2f rgba(%s,255), stop:1 rgba(%s,255))', fgc, valm, fgc, valp, bgc, bgc))
+end
+
+demonnic.iGauge.parent = Geyser.Container
+
+function demonnic.iGauge:new(cons, container)
+	cons = cons or {}
+	cons.type = cons.type or "iGauge"
+	local me = self.parent:new(cons, container)
+	setmetatable(me, self)
+	self.__index = self
+		
+	me.back = Geyser.Label:new({
+		name = me.name ..'_back',
+		x = 0, y = 0,
+		width = '100%', 
+		height = '100%',
+	}, me)
+	me.front = Geyser.Label:new({
+		name = me.name ..'_front', 
+		x = 0, y = 0,
+		width = '100%', 
+		height = '100%',
+	}, me.back)  	
+	me:setType(me.bartype)
+	me:update(me.value, me.fillcolor, me.emptycolor)
+	return me
+end
+</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+      <ScriptGroup isActive="yes" isFolder="yes">
+  <name>GUI</name>
+        <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+        <ScriptGroup isActive="yes" isFolder="yes">
+  <name>Create_Right</name>
+          <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+          <Script isActive="yes" isFolder="no">
+  <name>Create_Chat</name>
+            <script>chat_sections =
+  {
+		"BoxChatAll", 
+		"BoxChatCustom",
+		"BoxChatTells", 
+		"BoxChatParty", 
+		"BoxChatMailbox", 
+		"BoxChatSettings"
+		}
+chat_icons = 
+	{
+		"chat-all.png", 
+		"chat-custom.png", 
+		"chat-raven.png", 
+		"chat-party.png", 
+		"chat-mailbox.png", 
+		"chat-settings.png"
+	}
+chat_tooltips = 
+	{
+		"All", 
+		"Custom", 
+		"Tells", 
+		"Party", 
+		"Mailbox", 
+		"Chat Settings"
+	}
+chat_consoles =
+  {
+    "ChatAllConsole",
+    "ChatCustomConsole",
+    "ChatTellsConsole",
+    "ChatPartyConsole",
+    "ChatMai1boxConsole",
+    "ChatSettingsConsole"
+  }
+
+function on_chat_box_press(section)
+
+  for index = 1, #chat_sections do
+    local section_value = chat_sections[index]
+    local console_value = chat_consoles[index]
+		
+    if section_value == section then
+      GUI.CurrentChat = section
+			if index ~= #chat_sections then GUI[console_value]:show() end
+			GUI[section_value.."Grey"]:hide()
+    else
+      if index ~= #chat_sections then GUI[console_value]:hide() end
+			GUI[section_value.."Grey"]:show()
+    end
+  end
+end
+
+function GUI.CreateChat()
+  GUI.BoxChatButtonCSS = CSSMan.new([[
+    background-color: rgba(0,0,0,0);
+    border-style: solid;
+    border-color: #31363b;
+    border-width: 1px;
+		qproperty-alignment: 'AlignBottom|AlignMiddle';
+  ]])
+  
+  -- The icons will be contained here
+  GUI.HBoxChat =
+    Geyser.HBox:new({name = "HBoxChat", x = 0, y = 0, width = "50%", height = "5%"}, GUI.Right)
+  	
+  -- Add the icons and events
+  for index = 1, #chat_sections do
+    local section_value = chat_sections[index]
+    local section_icon = chat_icons[index]
+    local tooltip_value = chat_tooltips[index]
+  	
+		GUI[section_value] =
+    Geyser.Label:new(
+      {
+        name = section_value,
+        message = ""
+      },
+      GUI.HBoxChat
+    )
+		GUI[section_value]:setStyleSheet(GUI.BoxChatButtonCSS:getCSS())
+		
+   	GUI[section_value.."Icon"] =
+    Geyser.Label:new(
+      {
+        name = section_value.."Icon",
+        message = "",
+				x=0, y=0,
+				width=GUI.button_height, height=GUI.button_height
+      },
+      GUI[section_value]
+    )
+		set_icon(section_value.."Icon", "BoxRightCSS", section_icon, tooltip_value)
+		GUI[section_value .. "Icon"]:setClickCallback("on_chat_box_press", section_value)
+		set_greybox(section_value, "BoxRightCSS", tooltip_value, "on_chat_box_press")
+  end
+  
+  -- The consoles will be contained here
+  GUI.ChatBox =
+    Geyser.Label:new(
+      {name = "ChatBox", x = 0, y = "5%", width = "50%", height = "40%"}, GUI.Right
+    )
+  GUI.ChatBox:setStyleSheet(GUI.BoxRightCSS:getCSS())
+  
+  -- Add the consoles
+  for index = 1, #chat_sections - 1 do
+    local console_value = chat_consoles[index]
+		if not table.contains(GUI.consoles, console_value) then
+  		table.insert(GUI.consoles, console_value)
+  	end  	
+    GUI[console_value] =
+      GUI[console_value] or
+      Geyser.MiniConsole:new(
+        {
+          name = console_value,
+          x = GUI.ChatBox:get_x()+tonumber(string.format("%.0f", GUI.ChatBox:get_width()*0.02)),
+          y = GUI.ChatBox:get_y()+tonumber(string.format("%.0f", GUI.ChatBox:get_width()*0.02)),
+          height = GUI.ChatBox:get_height()-tonumber(string.format("%.0f", GUI.ChatBox:get_width()*0.02)),
+          width = GUI.ChatBox:get_width()-tonumber(string.format("%.0f", GUI.ChatBox:get_width()*0.02))
+        }
+      )
+    setBackgroundColor(console_value, 0, 0, 0, 0)
+    setMiniConsoleFontSize(console_value, GUI.ConsoleFontSize)
+    setFgColor(console_value, 192, 192, 192)
+    setBgColor(console_value, 0, 0, 0)
+    GUI[console_value]:enableAutoWrap()
+    GUI[console_value]:hide()
+  end
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+          <Script isActive="yes" isFolder="no">
+  <name>Create_Content</name>
+            <script>content_sections =
+  {
+		"BoxCharacter", 
+		"BoxCombat", 
+		"BoxEquipment", 
+		"BoxQuickwalk", 
+		"BoxMap", 
+		"BoxInfo"
+	}
+content_icons = 
+	{
+		"content-character.png", 
+		"content-combat.png", 
+		"content-equipment.png", 
+		"content-quickwalk.png", 
+		"content-map.png", 
+		"content-info.png"
+	}
+content_tooltips = {"Score", "Combat", "Equipment", "Quickwalk", "Map", "Info"}
+content_consoles =
+  {
+    "CharacterConsole",
+    "CombatConsole",
+    "EquipmentConsole",
+    "QuickwalkConsole",
+    "MapperConsole",
+    "InfoConsole"
+  }
+
+function on_content_box_press(section)
+  for index = 1, #content_sections do
+    local section_value = content_sections[index]
+    local console_value = content_consoles[index]
+		local delay = delay or GUI.TabTimersDelay
+				
+    if section_value == section then
+			if section == "CharacterConsole" then
+				render_console("CharacterConsole", content_body["CharacterConsole"])
+				delay  = TabTimersDelay * 6
+			end
+			GUI.CurrentContent = section
+      GUI[console_value]:show()
+			GUI[section_value.."Grey"]:hide()
+			startTabTimer(console_value, delay)
+    else
+      GUI[console_value]:hide()
+			GUI[section_value.."Grey"]:show()
+			killTabTimer(console_value)
+    end
+  end
+end
+
+function GUI.CreateContent()
+  GUI.BoxContentButtonCSS = CSSMan.new([[
+    background-color: rgba(0,0,0,0);
+    border-style: solid;
+    border-color: #31363b;
+    border-width: 1px;
+		qproperty-alignment: 'AlignBottom';
+  ]])
+  
+  -- The icons will be contained here
+  GUI.HBoxContent =
+    Geyser.HBox:new(
+      {name = "HBoxContent", x = 0, y = "45%", width = "50%", height = "5%"}, GUI.Right
+    )
+  	
+  -- Add the icons and events
+  for index = 1, #content_sections do
+    local section_value = content_sections[index]
+    local section_icon = content_icons[index]
+    local tooltip_value = content_tooltips[index]
+  	
+		GUI[section_value] =
+    Geyser.Label:new(
+      {
+        name = section_value,
+        message = ""
+      },
+      GUI.HBoxContent
+    )
+		GUI[section_value]:setStyleSheet(GUI.BoxChatButtonCSS:getCSS())
+		
+    GUI[section_value.."Icon"] =
+      Geyser.Label:new(
+        {
+          name = section_value.."Icon",
+          message = "",
+					x=3, y=0,
+					width=GUI.button_height, height=GUI.button_height
+        },
+        GUI[section_value]
+      )
+  	set_icon(section_value.."Icon", "BoxRightCSS", section_icon, tooltip_value)
+		GUI[section_value .. "Icon"]:setClickCallback("on_content_box_press", section_value)
+		set_greybox(section_value, "BoxRightCSS", tooltip_value, "on_content_box_press")
+  end
+  
+  -- The consoles will be contained here
+  GUI.ContentBox =
+    Geyser.Label:new(
+      {name = "ContentBox", x = 0, y = "50%", width = "50%", height = "40%"}, GUI.Right
+    )
+  GUI.ContentBox:setStyleSheet(GUI.BoxRightCSS:getCSS())
+  
+  -- Add the consoles (except the Mapper, because it is so special)
+  for index = 1, #content_sections do
+    local console_value = content_consoles[index]
+		if not table.contains(GUI.consoles, console_value) then
+  		table.insert(GUI.consoles, console_value)
+  	end
+    if console_value ~= "MapperConsole" then
+		  GUI[console_value] =
+        GUI[console_value] or
+        Geyser.MiniConsole:new(
+          {
+            name = console_value,
+            x = GUI.ContentBox:get_x()+tonumber(string.format("%.0f", GUI.ContentBox:get_width()*0.02)),
+            y = GUI.ContentBox:get_y()+tonumber(string.format("%.0f", GUI.ContentBox:get_width()*0.02)),
+            height = GUI.ContentBox:get_height()-tonumber(string.format("%.0f", GUI.ContentBox:get_width()*0.02)),
+            width = GUI.ContentBox:get_width()-tonumber(string.format("%.0f", GUI.ContentBox:get_width()*0.02))
+          }
+        )
+			setBackgroundColor(console_value, 0, 0, 0, 0)
+      setMiniConsoleFontSize(console_value, GUI.ConsoleFontSize)
+      setFgColor(console_value, 192, 192, 192)
+      setBgColor(console_value, 0, 0, 0)
+      GUI[console_value]:enableAutoWrap()
+			-- Add each section's internals
+			render_console(console_value, content_body[console_value])
+      GUI[console_value]:hide()
+		end
+  end  	
+end
+
+content_body = content_body or {
+ CharacterConsole = {
+ 	function(console_value)
+		local newString =  {}
+		if Character.Name ~= "" and Character.Surname ~= "" then
+			table.insert(newString, string.format("&lt;$header&gt;%s %s&lt;reset&gt;", Character.Name, Character.Surname))
+		else
+			table.insert(newString, string.format("&lt;$header&gt;%s&lt;reset&gt;", Character.Name))
+		end
+	
+		if Character.Title ~= "" and Character.GuildName ~= "" then
+			table.insert(newString, string.format("&lt;$item&gt; %-6s: %s\n %6s: %s&lt;reset&gt;", "Title", Character.Title, "Guild", Character.GuildName))
+		elseif Character.Title ~= "" then
+			table.insert(newString, string.format("&lt;$item&gt; %-6s: %s&lt;reset&gt;", "Title", Character.Title))
+		elseif Character.GuildName ~= "" then
+			table.insert(newString, string.format("&lt;$item&gt; %-6s: %s&lt;reset&gt;", "Guild", Character.GuildName))
+		end  		
+		table.insert(newString, string.format("&lt;$item&gt; %-6s: &lt;$value&gt;%s&lt;reset&gt;", "Race", Character.Race))
+		if Character.OpenLevels &gt; 0 then
+			table.insert(newString, string.format(
+				"&lt;$item&gt; %-6s: &lt;$value&gt;%-i&lt;$item&gt; (&lt;$bonus&gt;%i&lt;$item&gt; Open Levels)&lt;reset&gt;",  
+				"Level", Character.Level, Character.OpenLevels
+				)
+			)
+		else
+			table.insert(newString, string.format("&lt;$item&gt; %-6s: &lt;$value&gt;%i&lt;reset&gt;",  "Level", Character.Level))
+		end
+		local hungerValue = lookupHunger(Character.Hunger)
+		local hungerColor = "&lt;"..lookupHungerColor(Character.Hunger).."&gt;"
+		local alignColor = "&lt;"..GUI.Lookup.AlignColors[Character.Alignment].."&gt;"
+		table.insert(newString, string.format(
+			"&lt;$item&gt; %-6s: %s%s\n&lt;$item&gt; %-6s: %s%s (%3s%%)&lt;reset&gt;", 
+			"Align.", alignColor, GUI.Lookup.Alignment[Character.Alignment], "Hunger", hungerColor or "", hungerValue or "", Character.Hunger
+			)
+		)
+		GUI[console_value]:cecho(string.gsub(table.concat(newString, "\n"), "%$([%w_]+)", GUI.colors).."\n")
+	end,
+	function(console_value)
+		local newString =  {}
+		table.insert(newString, string.format("&lt;$subheader&gt;%-16s%-16s&lt;reset&gt;", "STATS", "TRAITS"))
+		local stats = {"Str", "Dex", "Con", "Sta", "Int", "Wis", "Cha"}
+		local traitKeys = {"AC", "Wimpy", "Poisoned", "Hiding", "Growth","Height", "Weight"}
+		for index = 1, #stats do
+			local stat = stats[index]
+			local trait = traitKeys[index]
+			local statObj = Character.Stats[stat]
+			
+			if statObj.Current == statObj.Base then bonusStr = "&lt;$value&gt;+0"
+			elseif statObj.Current &gt; statObj.Base then 
+				bonusStr = "&lt;$bonus&gt;+"..(statObj.Current - statObj.Base)
+			else bonusStr = "&lt;$penalty&gt;-"..(statObj.Base - statObj.Current) end
+
+			
+			local tColors = {
+				["AC"] = "&lt;"..GUI.Lookup.ACColors[Character.AC].."&gt;",
+				["Wimpy"] = "&lt;$value&gt;",
+				["Poisoned"] = "&lt;"..GUI.Lookup.PoisonedColors[Character.Poisoned].."&gt;",
+				["Hiding"] = "&lt;$value&gt;",
+				["Growth"] = "&lt;yellow&gt;",
+				["Height"] = "&lt;$value&gt;",
+				["Weight"] = "&lt;$value&gt;",
+			}
+			local tColor = tColors[trait]
+			local tValue = Character[trait]
+			local tWord = tValue
+			if GUI.Lookup[trait] ~= nil then
+				tWord = GUI.Lookup[trait][tValue]
+			elseif trait == "Height" then
+				tWord = Character.Height	
+			end
+			local t =  string.format(" %-8s: ", trait)
+			local str = "&lt;$item&gt;%4s: &lt;$value&gt;%-3s &lt;$item&gt;(%2s&lt;$item&gt;)  "
+			if trait == "Hiding" then 
+				str = str..t.."%s%s&lt;$item&gt; (&lt;$value&gt;%3s%%&lt;$item&gt;)"
+			elseif trait == "Wimpy" then
+				str = str..t.."%s%s%%&lt;reset&gt;"
+			elseif trait == "Weight" then
+				str = str..t.."%s%s lb&lt;reset&gt;"
+			else
+				str = str..t.."%s%s&lt;reset&gt;"
+			end
+			if trait ~= "Hiding" then
+				table.insert(newString, string.format(str, stat, statObj.Current, bonusStr, tColor, tWord))
+			else
+				table.insert(newString, string.format(str, stat, statObj.Current, bonusStr, tColor, tWord, Character.Stealth))
+			end
+		end
+		GUI[console_value]:cecho(string.gsub(table.concat(newString, "\n"), "%$([%w_]+)", GUI.colors).."\n")
+	end,
+	function(console_value)
+		local newString =  {}
+		table.insert(newString, string.format("&lt;$subheader&gt;%s&lt;reset&gt;", "GUILDS"))
+		
+		local guildTiers = {"alpha", "gamma", "bravo", "omicron"}
+		for index = 1, #guildTiers do
+  		local tier = guildTiers[index]
+  		local str = string.format("&lt;$item&gt; %-7s: &lt;$value&gt;", tier)
+  		local i = 0
+			if Character.Guilds[tier] ~= nil then
+  			local tierGuilds = Character.Guilds[tier]
+    		for k,v in pairs(tierGuilds) do
+    			str = str..firstToUpper(k).." ("..v..")"
+    			if i &lt; #Character.Guilds[tier] then str = str..", " end
+  			end
+			end
+			str = str.."&lt;reset&gt;"
+			table.insert(newString, str)
+		end
+		GUI[console_value]:cecho(string.gsub(table.concat(newString, "\n"), "%$([%w_]+)", GUI.colors).."\n")
+	end
+	},
+	CombatConsole = {
+	
+	}
+}</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+          <Script isActive="yes" isFolder="no">
+  <name>Create_Menu</name>
+            <script>menu_sections = 
+	{
+		"BoxAbilities", 
+		"BoxInventory", 
+		"BoxParty",
+		"BoxProgress",
+		"BoxConfig", 
+		"BoxHelp"
+	}
+menu_icons = 
+	{
+		"menu-abilities.png", 
+		"menu-inventory.png", 
+		"menu-party.png",
+		"menu-progress.png",
+		"menu-config.png", 
+		"menu-help.png"
+	}
+menu_tooltips = 
+	{
+		"Abilities (Skills/Spells)", 
+		"Inventory", 
+		"Party Status",
+		"Progress (Exp/Gold/Rewards)",
+		"Hotkey Configuration", 
+		"Help Topics"
+		}
+menu_consoles =
+  {
+		"AbilitiesConsole", 
+		"InventoryConsole", 
+		"PartyConsole", 
+		"ProgressContainer",
+		"ConfigConsole", 
+		"HelpContainer"
+	}
+
+progress_sections = 
+	{
+		"Gold",
+		"Bank",
+		"Exp",
+		"NextAdvLevel",
+		"NextGuildLevel",
+		"Kills",
+		"Rooms",
+		"MudPercent",
+		"NextReward",
+		"TaskPoints"
+	}
+progress_icons = 
+	{
+		"money-coins.png",
+		"progress-bank.png",
+		"money-exp.png",
+		"progress-adv.png",
+		"progress-guild.png",
+		"progress-kills.png",
+		"progress-rooms.png",
+		"progress-mudpercent.png",
+		"progress-nextreward.png",
+		"progress-taskpoints.png"
+	}
+progress_tooltips = 
+	{
+		"Current Gold", 
+		"Gold in Bank",
+		"Current Experience", 
+		"To Next Adventurer Level",
+		"To Next Guild Level",
+		"Total Kills",
+		"Rooms Explored",
+		"% of Mud Explored",
+		"% to next Exploration Reward",
+		"Task Points",
+	}
+	
+function on_menu_box_press(section)
+  for index = 1, #menu_sections do
+    local section_value = menu_sections[index]
+    local console_value = menu_consoles[index]
+		local delay = GUI.TabTimersDelay
+		
+    if section_value == section then
+			if section == "BoxAbilities" then
+				delay = GUI.TabTimersDelay * 3
+				render_console("AbilitiesConsole", menu_body["AbilitiesConsole"] )
+			elseif section == "BoxInventory" then
+				render_console("InventoryConsole", menu_body["InventoryConsole"] )
+			elseif section == "BoxParty" then
+				delay = GUI.TabTimersDelay / 2
+			elseif section == "BoxProgress" then
+				if GUI.NextAdvLevelBar then GUI.NextAdvLevelBar:show() end
+				if GUI.NextGuildLevelBar then GUI.NextGuildLevelBar:show() end
+			end
+			GUI.CurrentMenu = section
+      GUI[console_value]:show()
+			GUI[section_value.."Grey"]:hide()
+			startTabTimer(console_value, delay)
+    else
+      GUI[console_value]:hide()
+			GUI[section_value.."Grey"]:show()
+			killTabTimer(console_value)
+    end
+  end
+	if section ~= "BoxProgress" then
+		if GUI.NextAdvLevelBar then GUI.NextAdvLevelBar:hide() end
+		if GUI.NextGuildLevelBar then GUI.NextGuildLevelBar:hide() end
+	end
+end
+
+function GUI.CreateMenu()
+  GUI.BoxMenuButtonCSS = CSSMan.new([[
+    background-color: rgba(0,0,0,0);
+    border-style: solid;
+    border-color: #31363b;
+    border-width: 1px;
+  ]])
+  
+  -- The icons will be contained here
+  GUI.HBoxMenu =
+    Geyser.HBox:new(
+      {name = "HBoxMenu", x = "50%", y = 0, width = "50%", height = "5%"}, GUI.Right
+    )
+    
+  -- Add the icons and events
+  for index = 1, #menu_sections do
+    local section_value = menu_sections[index]
+    local section_icon = menu_icons[index]
+    local tooltip_value = menu_tooltips[index]
+		
+		GUI[section_value] =
+      Geyser.Label:new(
+        {
+          name = section_value,
+          message = "",
+        },
+        GUI.HBoxMenu
+      )
+		GUI[section_value]:setStyleSheet(GUI.BoxMenuButtonCSS:getCSS())
+    
+    GUI[section_value.."Icon"] =
+      Geyser.Label:new(
+        {
+          name = section_value.."Icon",
+          message = "",
+					x=0, y=0,
+					width=GUI.button_height, height=GUI.button_height
+        },
+        GUI[section_value]
+      )
+		set_icon(section_value.."Icon", "BoxMenuButtonCSS", section_icon, tooltip_value)
+		GUI[section_value .. "Icon"]:setClickCallback("on_menu_box_press", section_value)
+		set_greybox(section_value, "BoxRightCSS", tooltip_value, "on_menu_box_press")		
+  end
+  
+  -- The consoles will be contained here
+  GUI.MenuBox =
+    Geyser.Label:new(
+      {name = "MenuBox", x = "50%", y = "5%", width = "50%", height = "90%"}, GUI.Right
+    )    
+  GUI.MenuBox:setStyleSheet(GUI.BoxRightCSS:getCSS())
+  
+  -- Add the consoles (and containers)
+  for index = 1, #menu_consoles do
+    local console_value = menu_consoles[index]
+    if not table.contains(GUI.consoles, console_value) then
+  		table.insert(GUI.consoles, console_value)
+  	end
+    if console_value ~= "HelpContainer" and console_value ~= "ProgressContainer"  then
+      GUI[console_value] =
+        GUI[console_value] or
+        Geyser.MiniConsole:new(
+          {
+            name = console_value,
+            x = GUI.MenuBox:get_x()+tonumber(string.format("%.0f", GUI.MenuBox:get_width()*0.02)),
+            y = GUI.MenuBox:get_y()+tonumber(string.format("%.0f", GUI.MenuBox:get_width()*0.02)),
+            height = GUI.MenuBox:get_height()-tonumber(string.format("%.0f", GUI.MenuBox:get_width()*0.02)),
+            width = GUI.MenuBox:get_width()-tonumber(string.format("%.0f", GUI.MenuBox:get_width()*0.02))
+          }
+        )
+      setBackgroundColor(console_value, 0, 0, 0, 0)
+      setMiniConsoleFontSize(console_value, GUI.ConsoleFontSize)
+      setFgColor(console_value, 192, 192, 192)
+      setBgColor(console_value, 0, 0, 0)
+      GUI[console_value]:enableAutoWrap()
+      GUI[console_value]:hide()
+		elseif console_value == "ProgressContainer" then
+			--Progress Menu 
+    	GUI.ProgressContainer =
+      Geyser.Container:new(
+        {name = "ProgressContainer", 
+    			x = GUI.MenuBox:get_x()+tonumber(string.format("%.0f", GUI.MenuBox:get_width()*0.02)),
+          y = GUI.MenuBox:get_y()+tonumber(string.format("%.0f", GUI.MenuBox:get_width()*0.02)),
+          height = GUI.MenuBox:get_height()-tonumber(string.format("%.0f", GUI.MenuBox:get_width()*0.02)),
+          width = GUI.MenuBox:get_width()-tonumber(string.format("%.0f", GUI.MenuBox:get_width()*0.02))
+        }
+      )
+    	
+    	GUI.VBoxProgress =
+      Geyser.VBox:new(
+        {name = "VBoxProgress", 
+    		x = "0%", y = "0%",
+    		width = "90%", height = "90%"
+				}, GUI.ProgressContainer
+      )
+    	GUI.do_progress_build(progress_sections, progress_icons, progress_tooltips)	
+    	GUI.ProgressContainer:hide()
+    else
+      GUI[console_value] =
+        GUI[console_value] or
+        Geyser.Container:new(
+          {
+            name = console_value,
+            x = GUI.MenuBox:get_x(),
+            y = GUI.MenuBox:get_y(),
+            height = GUI.MenuBox:get_height(),
+            width = GUI.MenuBox:get_width()
+          }
+        )      
+			setBackgroundColor(console_value, 0, 0, 0, 0)
+			GUI[console_value]:hide()
+    end
+  end
+end
+
+function GUI.do_progress_build(sections, icons, tooltips)
+	for index = 1, #sections do
+		local section_value = sections[index]
+    local section_icon = icons[index]
+    local tooltip_value = tooltips[index]
+  	
+
+		GUI[section_value.."Container"] =
+    Geyser.Label:new(
+      {
+        name = section_value.."Container",
+        message = "",
+				x = 0, y = 0,
+				height =  GUI.button_height+6,
+    		width = "100%"
+      },
+      GUI.VBoxProgress
+    )
+		GUI[section_value.."Container"]:setStyleSheet(GUI.MoneyBoxCSS:getCSS())
+		
+		GUI["Box"..section_value] =
+    Geyser.Label:new(
+      {
+        name = "Box"..section_value,
+        message = "",
+				x = 3, y = 3,
+				height = GUI.button_height,
+    		width = GUI.button_height
+      },
+      GUI[section_value.."Container"]
+    )
+		GUI["Box"..section_value]:setStyleSheet(GUI.MoneyBoxCSS:getCSS())
+		
+    GUI["Box"..section_value .. "Icon"] =
+    Geyser.Label:new(
+      {
+        name = "Box"..section_value .. "Icon",
+        message = "",
+				x = 0, y = 0,
+				height = GUI.button_height,
+    		width = GUI.button_height
+      },
+      GUI["Box"..section_value]
+    )
+  	set_icon("Box"..section_value.."Icon", "BoxMenuButtonCSS", section_icon, tooltip_value)
+    GUI["Box"..section_value .. "Icon"]:setClickCallback("on_progress_box_press", section_value)
+		
+		if section_value == "NextAdvLevel" or section_value == "NextGuildLevel" then			
+	
+			barName = section_value .. "Bar"
+			section_color = "gold"
+  		GUI[barName.."Wrapper"] =
+        GUI[barName .. "Wrapper"] or
+        Geyser.Container:new(
+          {
+            name = barName.."Wrapper",
+            message = "",
+            x = "20%", y = "5%",
+            width = "80%",
+            height = "100%"
+          },GUI[section_value.."Container"])
+			
+			GUI[barName] =
+        GUI[barName] or
+        Geyser.Gauge:new(
+          {
+            name = barName,
+            message = "",
+            x = "0%", y = "0%",
+            width = "100%",
+            height = "40%"
+          },GUI[barName .. "Wrapper"])
+      GUI[barName].back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
+      GUI.GaugeFrontCSS:set("background-color",section_color)
+      GUI[barName].front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())		
+			GUI[barName]:hide()
+			
+			GUI[section_value .. "Value"] =
+     	Geyser.Label:new(
+        {
+          name = section_value .. "Value",
+          message = string.format("&lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;%9s %s&lt;/font&gt;&lt;/b&gt;", 0, section_value),
+  				x = "0%", y = "30%",
+  				height="70%", width="100%"
+        },
+        GUI[barName.."Wrapper"]
+      )
+  		GUI[section_value .. "Value"]:setStyleSheet(GUI.ProgressLabelCSS:getCSS())
+			
+  		if not table.contains(GUI.gauges, barName) then
+  			table.insert(GUI.gauges, barName)
+  		end
+    else
+			GUI[section_value .. "Value"] =
+     	Geyser.Label:new(
+        {
+          name = section_value .. "Value",
+          message = string.format("&lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;%9s %s&lt;/font&gt;&lt;/b&gt;", 0, section_value),
+  				x = "20%", y = "0%",
+  				height="100%", width="80%"
+        },
+        GUI[section_value.."Container"]
+      )
+  		GUI[section_value .. "Value"]:setStyleSheet(GUI.ProgressLabelCSS:getCSS())
+		end
+  end
+		GUI["ProgressFillContainer1"] =
+  Geyser.Label:new(
+    {
+      name = "ProgressFillContainer1",
+      message = "",
+			x = 0, y = 0,
+			height =  "100%",
+  		width = "100%"
+    },
+    GUI.VBoxProgress
+  )
+	GUI["ProgressFillContainer1"]:setStyleSheet(GUI.MoneyBoxCSS:getCSS())
+	
+	GUI["ProgressFillContainer2"] =
+  Geyser.Label:new(
+    {
+      name = "ProgressFillContainer2",
+      message = "",
+			x = 0, y = 0,
+			height =  "100%",
+  		width = "100%"
+    },
+    GUI.VBoxProgress
+  )
+	GUI["ProgressFillContainer2"]:setStyleSheet(GUI.MoneyBoxCSS:getCSS())
+	
+end
+
+function render_progress()
+	for index = 1, #progress_sections do
+		local section_value = progress_sections[index]
+		--echo("Rendering "..section_value.."\n")
+		GUI[section_value .. "Value"]:echo(string.format("&lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;%s&lt;/font&gt;&lt;/b&gt;", progressValue(section_value)()))
+	end
+	GUI.NextAdvLevelBar:setValue(Character.Exp.Current, Character.Exp.NextAdvLevel, "")
+	GUI.NextGuildLevelBar:setValue(Character.Exp.Current, Character.Exp.NextGuildLevel, "")
+	
+	GUI["CurrentGoldValue"]:echo(string.format("&lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;%10s %-10s&lt;br&gt;&lt;/font&gt;&lt;/b&gt;", format_num(Character.Gold.Current, 0), "Gold"))
+	GUI["CurrentExpValue"]:echo(string.format("&lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;%10s %-10s&lt;br&gt;( %0.1f%% )&lt;/font&gt;&lt;/b&gt;", format_num(Character.Exp.Current, 0), "Exp", (Character.Exp.Current/Character.Exp.NextGuildLevel)*100))
+end
+
+function progressValue(section)
+	local progress_handlers = 
+	{
+		Gold = function() return format_num(Character.Gold.Current, 0).." Gold on hand" end,
+		Bank = function() return format_num(Character.Gold.Bank, 0).." Gold in bank" end ,
+		Exp = function() return format_num(Character.Exp.Current, 0).." Experience" end,
+		NextAdvLevel = function()
+			local str = string.format("%s ( %0.3f%% )", format_num(Character.Exp.Current, 0).."/"..format_num(Character.Exp.NextAdvLevel, 0), (Character.Exp.Current/Character.Exp.NextAdvLevel)*100 )
+			return str
+		end ,
+		NextGuildLevel = function()
+			local str = string.format("%s ( %0.3f%% )", format_num(Character.Exp.Current, 0).."/"..format_num(Character.Exp.NextGuildLevel, 0), (Character.Exp.Current/Character.Exp.NextGuildLevel)*100)
+			return str
+		end ,
+		Kills = function() return format_num(Character.Kills, 0).." Kills" end ,
+		Rooms = function() return format_num(Character.Explored.Rooms, 0).." Rooms Explored" end,
+		MudPercent = function() return Character.Explored.MudPercent.."% of Mud Explored" end,
+		NextReward = function() return Character.Explored.NextReward.."% to Next Award" end,
+		TaskPoints = function() return Character.TaskPoints.." Task Points" end		
+	}
+	
+	return progress_handlers[section]
+end
+
+menu_body = menu_body or {
+ AbilitiesConsole = {
+ 	function(console_value)
+		local newString = string.format("&lt;$header&gt;..--==| &lt;$bonus&gt;%s&lt;$header&gt; |==--..&lt;reset&gt;", "SKILLS")
+		GUI[console_value]:cecho(string.gsub(newString, "%$([%w_]+)", GUI.colors).."\n")		
+		gRanks = {[1] = "alpha", [2] = "gamma", [3] = "bravo", [4] = "omicron"}
+  	for r = 1, #gRanks do
+			local rank = gRanks[r]
+			if Character.Guilds[rank] then
+				local gKeys = table.keys(Character.Guilds[rank])
+				for i = 1, #gKeys do
+    			local guild = gKeys[i]
+					newString = string.format("&lt;$header&gt; -=-=-| &lt;$value&gt;%s&lt;$header&gt; |-=-=-&lt;reset&gt;", firstToUpper(guild))
+					GUI[console_value]:cecho(string.gsub(newString, "%$([%w_]+)", GUI.colors).."\n")
+  				local sKeys = {}
+					local names = Character.Skills[guild]
+					if names then
+						for k in pairs(names) do table.insert(sKeys, k) end
+  					table.sort(sKeys)
+      			for s = 1, #sKeys do
+      				local name = sKeys[s]
+      				local percent = Character.Skills[guild][name]
+							newString = string.format("&lt;$value&gt;%4s%% &lt;$item&gt;| &lt;reset&gt;", percent)
+							GUI[console_value]:cecho(string.gsub(newString, "%$([%w_]+)", GUI.colors))
+							GUI[console_value]:setUnderline(true)
+            	GUI[console_value]:fg(GUI.colors.item)
+            	GUI[console_value]:echoPopup(string.format("%s\n", name),
+								{
+									[[send("help skill ]]..name..[[", true)]], 
+									[[send("use ]]..name..[[")]]
+								}, {
+									"Help", 
+									"Use"
+								}, true)
+            	GUI[console_value]:setUnderline(false)
+            	GUI[console_value]:fg(GUI.colors.value)
+      			end
+					end	
+    		end
+			end
+		end
+	end,
+	 function(console_value)
+		local newString = string.format("\n&lt;$header&gt;..--==| &lt;$bonus&gt;%s&lt;$header&gt; |==--..&lt;reset&gt;", "SPELLS")
+		GUI[console_value]:cecho(string.gsub(newString, "%$([%w_]+)", GUI.colors).."\n")		
+		gRanks = {[1] = "alpha", [2] = "gamma", [3] = "bravo", [4] = "omicron"}
+  	for r = 1, #gRanks do
+			local rank = gRanks[r]
+			if Character.Guilds[rank] then
+				local gKeys = table.keys(Character.Guilds[rank])
+				for i = 1, #gKeys do
+    			local guild = gKeys[i]
+					newString = string.format("&lt;$header&gt; -=-=-| &lt;$value&gt;%s&lt;$header&gt; |-=-=-&lt;reset&gt;", firstToUpper(guild))
+					GUI[console_value]:cecho(string.gsub(newString, "%$([%w_]+)", GUI.colors).."\n")
+  				local sKeys = {}
+					local names = Character.Spells[guild]
+					if names then
+						for k in pairs(names) do table.insert(sKeys, k) end
+  					table.sort(sKeys)
+      			for s = 1, #sKeys do
+      				local name = sKeys[s]
+      				local percent = Character.Spells[guild][name]
+							newString = string.format("&lt;$value&gt;%4s%% &lt;$item&gt;| &lt;reset&gt;", percent)
+							GUI[console_value]:cecho(string.gsub(newString, "%$([%w_]+)", GUI.colors))
+							GUI[console_value]:setUnderline(true)
+            	GUI[console_value]:fg(GUI.colors.item)
+            	GUI[console_value]:echoPopup(string.format("%s\n", name),
+								{
+									[[send("help spell ]]..name..[[", true)]], 
+									[[send("cast ]]..name..[[")]]
+								}, {
+									"Help", 
+									"Use"
+								}, true)
+            	GUI[console_value]:setUnderline(false)
+            	GUI[console_value]:fg(GUI.colors.value)
+      			end
+					end	
+    		end
+			end
+		end
+	end,
+	},
+	InventoryConsole = {
+ 	function(console_value)
+		local inv_commands = 
+		{
+			[[GUI.InventoryHideEq = true
+				refreshInventory()]],
+			[[GUI.InventoryHideEq = false
+				refreshInventory()]]
+		}
+		local inv_tooltips = 
+		{
+			"[Click] Hide Eq",
+			"[R-Click] Show Eq"
+		}
+		GUI[console_value]:setBold(false)
+		GUI[console_value]:setUnderline(true)
+		GUI[console_value]:fg(GUI.colors.item)
+		GUI[console_value]:echoPopup("Inventory",
+			inv_commands,
+			inv_tooltips,
+			true
+		)
+		GUI[console_value]:setBold(true)
+		GUI[console_value]:echoPopup(" [Kept] ",
+			inv_commands,
+			inv_tooltips,
+			true
+		)
+		GUI[console_value]:setBold(false)
+		GUI[console_value]:fg(GUI.colors.eq_item)
+		local eqText = ""
+		if GUI.InventoryHideEq == true then eqText = "[Eq-hidden]"
+		else eqText = "[Eq]" end
+		GUI[console_value]:echoPopup(eqText.."\n",
+			inv_commands,
+			inv_tooltips,
+			true
+		)
+    resetFormat()
+		GUI[console_value]:cecho(string.gsub(string.format("&lt;$item&gt;Weight: You[&lt;cyan&gt;%4i&lt;$item&gt;] + EQ[&lt;cyan&gt;%4i&lt;$item&gt;] =&lt;reset&gt;", Character.Weight, Character.InventoryWeight), "%$([%w_]+)", GUI.colors).."\n")
+		GUI[console_value]:cecho(string.gsub(string.format("&lt;$item&gt;Total[&lt;cyan&gt;%4i&lt;$item&gt;], Capacity[&lt;%s&gt;%3i%%&lt;$item&gt;]&lt;reset&gt;", Character.Weight+Character.InventoryWeight, lookupCapacityColor(Character.InventoryCapacity), Character.InventoryCapacity), "%$([%w_]+)", GUI.colors).."\n")
+
+		local sKeys = {"General items", "Gems", "Armors", "Weapons"}
+		for k in pairs(Character.Inventory) do
+			if not table.contains(sKeys, k) then table.insert(sKeys, k) end
+		end
+		for s = 1, #sKeys do
+			local section = sKeys[s]
+			if Character.Inventory[section] and #Character.Inventory[section] &gt; 0 then
+				GUI[console_value]:cecho("      ")
+				GUI[console_value]:setFgColor(
+					Character.InventoryHeadersFg[section]["r"], 
+					Character.InventoryHeadersFg[section]["g"],
+					Character.InventoryHeadersFg[section]["b"]	
+				)
+				GUI[console_value]:setBgColor(
+					Character.InventoryHeadersBg[section]["r"], 
+					Character.InventoryHeadersBg[section]["g"],
+					Character.InventoryHeadersBg[section]["b"]	
+				)
+				GUI[console_value]:setBold(true)
+  			GUI[console_value]:cecho("[+-+ "..section.." +-+]\n")
+				resetFormat()
+  			for i = 1, #Character.Inventory[section] do
+    			local obj = Character.Inventory[section][i]
+					local visible = true
+					if obj.worn == true and GUI.InventoryHideEq == true then
+						visible = false
+					elseif obj.wielded == true and GUI.InventoryHideEq == true then
+						visible = false
+					end
+					if visible == true then
+    				GUI[console_value]:cecho(string.gsub(string.format("%-18s", "(&lt;cyan&gt;"..obj.quantity.."&lt;reset&gt;)"), "%$([%w_]+)", GUI.colors))
+  					local commands = {
+    					[[send("examine first ]]..obj.name..[[", true)]]						
+    				}
+  					local tooltips =  {
+    					"Examine"
+    				}
+  					GUI[console_value]:fg(GUI.colors.item)
+  					if obj.worn == true or obj.wielded == true then
+  						GUI[console_value]:fg(GUI.colors.eq_item)
+  						table.insert(commands, [[send("remove ]]..obj.name..[[", true)]])
+  						table.insert(tooltips, "Remove")
+  					end
+  					if obj.kept == true then
+  						GUI[console_value]:setBold(true)
+          	else
+  						table.insert(commands, [[send("sell a ]]..obj.name..[[", true)]])
+  						table.insert(tooltips, "Sell")
+  						table.insert(commands, [[send("sell all ]]..obj.name..[[", true)]])
+  						table.insert(tooltips, "Sell all")
+  					end
+  					GUI[console_value]:setUnderline(true)	
+          	GUI[console_value]:echoPopup(string.format("%s\n", obj.name), commands, tooltips, true)
+          	resetFormat()
+					end
+  			end
+			end
+		end
+	end
+	}
+}</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+          <Script isActive="yes" isFolder="no">
+  <name>Create_Money</name>
+            <script>money_sections = 
+	{
+		"CurrentGold",
+		"CurrentExp"
+	}
+money_icons = 
+	{
+		"money-coins.png",
+		"money-exp.png"
+	}
+money_tooltips = 
+	{
+		"Current Gold", 
+		"Current Experience"
+	}
+
+function GUI.CreateMoney()
+  GUI.HBoxMoney =
+    Geyser.Container:new(
+      {name = "HBoxMoney", x = 0, y = "90%", width = "50%", height = "5%"}, GUI.Right
+    )
+
+	-- Add the icons and events
+	xPos = {"0%", "50%"}
+  for index = 1, #money_sections do
+    local section_value = money_sections[index]
+    local section_icon = money_icons[index]
+    local tooltip_value = money_tooltips[index]  	
+
+		GUI[section_value.."Container"] =
+    Geyser.Container:new(
+      {
+        name = section_value.."Container",
+        message = "",
+				x = xPos[index], y = 0,
+				height = "100%",
+    		width = "50%"
+      },
+      GUI.HBoxMoney
+    )
+		
+		GUI["Box"..section_value] =
+    Geyser.Label:new(
+      {
+        name = "Box"..section_value,
+        message = "",
+				x = 0, y = 0,
+				height = "100%",
+    		width = "30%"
+      },
+      GUI[section_value.."Container"]
+    )
+		GUI["Box"..section_value]:setStyleSheet(GUI.MoneyBoxCSS:getCSS())
+		
+    GUI["Box"..section_value .. "Icon"] =
+    Geyser.Label:new(
+      {
+        name = "Box"..section_value .. "Icon",
+        message = "",
+				x = 0, y = 0,
+				height = GUI.button_height,
+    		width = GUI.button_height
+      },
+      GUI["Box"..section_value]
+    )
+  	set_icon("Box"..section_value.."Icon", "MoneyBoxCSS", section_icon, tooltip_value)
+    GUI["Box"..section_value .. "Icon"]:setClickCallback("on_money_box_press", section_value)
+		if not table.contains(GUI.icons, "Box"..section_value.."Icon") then
+  		table.insert(GUI.icons, "Box"..section_value.."Icon")
+  	end
+		
+		local key = string.split(section_value, "Current")[2]
+		sectionObj = Character[key]
+	 	GUI[section_value .. "Value"] =
+   	Geyser.Label:new(
+      {
+        name = section_value .. "Value",
+        message = string.format("&lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;%12s&lt;br&gt;%-12s&lt;/font&gt;&lt;/b&gt;", format_num(sectionObj.Current, 0), key),
+				x = "30%", y = "0%",
+				height="100%", width="70%"
+      },
+      GUI[section_value.."Container"]
+    )
+		GUI[section_value .. "Value"]:setStyleSheet(GUI.MoneyLabelCSS:getCSS())
+  end
+end
+
+function on_money_box_press()
+	on_menu_box_press("BoxProgress")
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+          <Script isActive="yes" isFolder="no">
+  <name>Create_Status</name>
+            <script>status_sections =
+  {
+    "BoxBrave",
+    "BoxPkable",
+    "BoxPoisoned",
+    "BoxConfused",
+    "BoxHallucinating",
+    "BoxDrunk"
+  }
+status_icons =
+  {
+    "chat-settings.png",
+    "chat-settings.png",
+    "chat-settings.png",
+    "chat-settings.png",
+    "chat-settings.png",
+    "chat-settings.png"
+  }
+status_tooltips =
+  {
+    "Brave",
+    "PK Flag",
+    "Poisoned",
+    "Confused",
+    "Hallucinating",
+    "Drunk"
+  }
+
+function on_status_box_press(section)
+  for index = 1, #status_sections do
+    local section_value = menu_sections[index]
+		
+    if section_value == section then
+			GUI.CurrentStatus = section
+      --GUI[console_value]:show()
+    else
+      --GUI[console_value]:hide()
+    end
+  end
+end
+
+function GUI.CreateStatus()
+  -- The icons will be contained here
+  GUI.HBoxStatus =
+    Geyser.HBox:new(
+      {name = "HBoxStatus", x = 0, y = "95%", width = "100%", height = "5%"}, GUI.Right
+    )
+  	
+  -- Add the icons and events
+  for index = 1, #status_sections do
+    local section_value = status_sections[index]
+    local section_icon = status_icons[index]
+    local tooltip_value = status_tooltips[index]
+		
+    GUI[section_value] =
+      Geyser.Container:new(
+        {
+          name = section_value,
+          message = ""
+        },
+        GUI.HBoxStatus
+      )
+    
+    GUI[section_value.."Icon"] =
+      Geyser.Label:new(
+        {
+          name = section_value.."Icon",
+          message = "",
+					x=0, y=0,
+					width=GUI.button_height, height=GUI.button_height
+        },
+        GUI[section_value]
+      )
+		set_icon(section_value.."Icon", "BoxRightCSS", section_icon, tooltip_value)
+		GUI[section_value .. "Icon"]:setClickCallback("on_status_box_press", section_value)
+		set_greybox(section_value, "BoxRightCSS", tooltip_value, "on_status_box_press")
+  end
+	   
+	 GUI.BoxTooltip =
+    Geyser.Container:new(
+      {
+        name = "BoxTooltip",
+        message = "",
+				h_stretch_factor = 6
+      },
+      GUI.HBoxStatus
+    )
+  GUI.TooltipLabel =
+    Geyser.Label:new(
+      {
+        name = "TooltipLabel",
+        message = "",
+				x=0, y=0,
+				width="100%", height="100%"
+      },
+      GUI.BoxTooltip
+    )
+		GUI.TooltipLabel:setStyleSheet(GUI.TooltipLabelCSS:getCSS())
+		GUI.TooltipLabel:setOnEnter(
+      "enable_tooltip",
+      "&lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;Displays info on the current UI element.&lt;/font&gt;&lt;/b&gt;&lt;/center&gt;"
+    )
+    GUI.TooltipLabel:setOnLeave(
+      "disable_tooltip",
+      ""
+    )
+	
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+        <Script isActive="yes" isFolder="no">
+  <name>Border_and_Font_Sizes</name>
+          <script>function GUI.UpdateBorderSizes()
+	local w,h = getMainWindowSize()
+	-- Only update if window size have changed!
+	if( w ~= GUI.window_width or h ~= GUI.window_height ) then
+		GUI.window_width = w
+		GUI.window_height = h
+		
+		GUI.button_height = h/20
+
+		local cx = GUI.mainconsole_container:get_x()
+		local cy = GUI.mainconsole_container:get_y()
+		local cw = GUI.mainconsole_container:get_width()
+		local ch = GUI.mainconsole_container:get_height()
+
+		setBorderLeft(tonumber(cx))
+		setBorderTop(tonumber(cy))
+		setBorderRight(tonumber(w-cx-cw))
+		setBorderBottom(tonumber(h-cy-ch))
+		
+		GUI.UpdateConsoleFontSize()
+		GUI.UpdateFontSize()
+		return true
+	end
+	return false
+end
+
+function GUI.UpdateConsoleFontSize()
+	--MiniConsoleFontSize
+	local w,h = getMainWindowSize()
+	local defaultWidth = w * 0.2
+	local targetWidth = defaultWidth / 40
+	local width,height = calcFontSize(GUI.ConsoleFontSize)
+	if width &gt; targetWidth then
+		GUI.ConsoleFontSize = GUI.ConsoleFontSize - 1
+		GUI.UpdateConsoleFontSize()
+	elseif width &lt; targetWidth * .6 then
+		GUI.ConsoleFontSize = GUI.ConsoleFontSize + 1
+		GUI.UpdateConsoleFontSize()	
+	end
+end
+
+function GUI.UpdateFontSize()
+	--FontSize
+
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+        <Script isActive="yes" isFolder="no">
+  <name>Create_Background</name>
+          <script>function GUI.CreateBackground()
+    GUI.BackgroundCSS = CSSMan.new([[
+      background-color: rgb(20,0,20);
+    ]])
+    
+    GUI.Right = Geyser.Label:new({
+      name = "Right",
+      x = "-40%", y = 0,
+      width = "40%",
+      height = "100%",
+    })
+    GUI.Right:setStyleSheet(GUI.BackgroundCSS:getCSS())
+    
+    GUI.Top = Geyser.Label:new({
+      name = "Top",
+      x = 0, y = 0,
+      width = "60%",
+      height = "5%",
+    })
+    GUI.Top:setStyleSheet(GUI.BackgroundCSS:getCSS())
+    
+    GUI.Bottom = Geyser.Label:new({
+      name = "Bottom",
+      x = 0, y = "90%",
+      width = "60%",
+      height = "10%",
+    })
+    GUI.Bottom:setStyleSheet(GUI.BackgroundCSS:getCSS())
+  end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+        <Script isActive="yes" isFolder="no">
+  <name>Create_Header</name>
+          <script>header_sections =
+  {
+    "Box0",
+    "Box1",
+    "Box2",
+    "Box3",
+    "Box4",
+    "Box5",
+    "Box6",
+    "Box7",
+    "Box8",
+    "Box9",
+    "Box10",
+    "Box11",
+		"Box12",
+    "Box12",
+    "Box14",
+    "Box15",
+  }
+header_icons =
+  {
+    "0",
+    "1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8",
+		"9",
+		"10",
+		"11",
+		"12",
+		"13",
+		"14",
+		"15",
+  }
+header_tooltips =
+  {
+    "Score",
+    "Key 1",
+    "Key 2",
+    "Key 3",
+    "Key 4",
+    "Key 5",
+    "Key 6",
+    "Key 7",
+    "Key 8",
+    "Key 9",
+    "Key 0",
+    "Shift+1",
+    "Shift+2",
+    "Shift+3",
+    "Shift+4",
+    "Shift+5",
+  }
+header_stretch = {1.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+
+function GUI.CreateHeader()
+  GUI.BoxHeaderCSS = CSSMan.new([[
+    background-color: rgba(0,0,0,0);
+  	qproperty-wordWrap: true;
+  ]])
+  
+  -- The icons will be contained here
+  GUI.HBoxHeader =
+    Geyser.HBox:new(
+      {name = "HBoxHeader", x = 0, y = 0, width = "100%", height = "100%"}, GUI.Top
+    )
+  	
+  -- Add the icons and events
+  for index = 1, #header_sections do
+    local section_value = header_sections[index]
+    local icon_value = header_icons[index]
+    local tooltip_value = header_tooltips[index]
+    local stretch_value = header_stretch[index]
+  	
+    if section_value ~= "Score" then
+      GUI[section_value] =
+        GUI[section_value] or
+        Geyser.Label:new(
+          {
+            name = "Top" .. section_value,
+            message = "&lt;center&gt;&lt;b&gt;&lt;font size=\""..(GUI.FontSize+2).."\"&gt;" .. icon_value .. "&lt;/font&gt;&lt;/b&gt;",
+            h_stretch_factor = stretch_value,
+          },
+          GUI.HBoxHeader
+        )
+      GUI[section_value]:setStyleSheet(GUI.BoxHeaderCSS:getCSS())
+      GUI[section_value]:setOnEnter(
+        "enable_tooltip",
+        "&lt;center&gt;&lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;" .. icon_value .. "&lt;/font&gt;&lt;/b&gt;&lt;br&gt;" .. tooltip_value
+      )
+      GUI[section_value]:setOnLeave(
+        "disable_tooltip",
+        "&lt;center&gt;&lt;b&gt;&lt;font size=\""..(GUI.FontSize+2).."\"&gt;" .. icon_value .. "&lt;/font&gt;&lt;/b&gt;"
+      )
+    else
+      GUI[section_value] =
+        GUI[section_value] or
+        Geyser.Label:new(
+          {
+            name = "Top" .. section_value,
+            message = "&lt;center&gt;&lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;" .. icon_value .. "&lt;/font&gt;&lt;/b&gt;",
+            h_stretch_factor = stretch_value,
+          },
+          GUI.HBoxHeader
+        )
+      GUI[section_value]:setStyleSheet(GUI.BoxHeaderCSS:getCSS())
+      GUI[section_value]:setOnEnter(
+        "enable_tooltip",
+        "&lt;center&gt;&lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;" .. icon_value .. "&lt;/font&gt;&lt;/b&gt;&lt;br&gt;" .. tooltip_value
+      )
+      GUI[section_value]:setOnLeave(
+        "disable_tooltip",
+        "&lt;center&gt;&lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;" .. icon_value .. "&lt;/font&gt;&lt;/b&gt;"
+      )
+    end
+  end
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+        <Script isActive="yes" isFolder="no">
+  <name>Create_Footer</name>
+          <script>footer_top_sections =
+  {
+    "Health",
+    "Spell",
+    "Endurance",
+    "Enemy"
+  }
+footer_top_icons =
+  {
+    "health-points.png",
+    "spell-points.png",
+    "endurance-points.png",
+    "enemy-points"
+  }
+footer_top_colors =
+  {
+    "red",
+    "blue",
+    "darkorange",
+    "purple"
+  }
+ footer_top_tooltips =
+  {
+    "Hp",
+    "Sp",
+    "Ep",
+    "EHp"
+  }
+	
+	
+footer_bottom_sections =
+  {
+    "Room",
+    "Area",
+    "Exits"
+  }
+
+function GUI.CreateFooter()
+  GUI.Footer = Geyser.VBox:new({
+    name = "Footer",
+    x = 0, y = 0,
+    width = "100%",
+    height = "100%",
+  },GUI.Bottom)
+  
+  GUI.FooterTop = Geyser.Container:new({
+    name = "FooterTop",
+  },GUI.Footer)
+  
+  GUI.FooterBottom = Geyser.HBox:new({
+    name = "FooterBottom",
+  },GUI.Footer)
+  
+  GUI.GaugeBackCSS = CSSMan.new([[
+    background-color: rgba(0,0,0,0);
+    border-style: solid;
+    border-color: white;
+    border-width: 1px;
+    border-radius: 5px;
+    margin: 5px;
+  ]])
+  
+  GUI.GaugeFrontCSS = CSSMan.new([[
+    background-color: rgba(0,0,0,0);
+    border-style: solid;
+    border-color: white;
+    border-width: 1px;
+    border-radius: 5px;
+    margin: 5px;
+  ]])
+	
+	 GUI.BoxFooterCSS = CSSMan.new([[
+    background-color: rgba(0,0,0,0);
+  	margin: 2px;
+  	qproperty-wordWrap: true;
+  	qproperty-alignment: 'AlignBottom';
+  ]])
+	
+	GUI.BoxFooterIconCSS = CSSMan.new([[
+    background-color: rgba(0,0,0,0);
+  	margin: 2px;
+  	qproperty-wordWrap: true;
+  	qproperty-alignment: 'AlignBottom';
+  ]])
+	
+	GUI.BarLabelCSS = CSSMan.new([[
+    background-color: rgba(0,0,0,0);
+  	margin: 10px;
+  	qproperty-alignment: 'AlignCenter';
+  ]])
+	
+	-- Add the icons and events
+  for index = 1, #footer_top_sections do
+		local section_value = footer_top_sections[index]
+		local section_color = footer_top_colors[index]
+    local section_icon = footer_top_icons[index]
+    local tooltip_value = footer_top_tooltips[index]
+		boxName = "Box" .. section_value
+		iconName = boxName .. "Icon"
+		boxPos = (index*25)-25
+		
+    GUI[boxName] =
+      GUI[boxName] or
+      Geyser.Label:new(
+        {
+          name = boxName,
+          message = "",
+          x = boxPos.."%", y = 0,
+          width = "5%",
+          height = "100%"
+        },GUI.FooterTop)
+		GUI[boxName]:setStyleSheet(GUI.BoxFooterCSS:getCSS())
+				
+		GUI[iconName] =
+      GUI[iconName] or
+      Geyser.Label:new(
+        {
+          name = iconName,
+          message = "",
+          x = 0, y = 0,
+          height = GUI.button_height,
+    			width = GUI.button_height
+        },GUI[boxName])
+		set_icon(iconName, "BoxFooterIconCSS", section_icon, tooltip_value)
+		--GUI[section_value .. "Icon"]:setClickCallback("on_boxfooter_press", section_value)
+    		
+		barName = tooltip_value .. "Bar"
+		
+		GUI[barName .. "Wrapper"] =
+      GUI[barName .. "Wrapper"] or
+      Geyser.Container:new(
+        {
+          name = barName .. "Wrapper",
+          message = "",
+          x = (boxPos+5).."%", y = 0,
+          width = "20%",
+          height = "100%",
+        },GUI.FooterTop)		
+		
+		GUI[barName] =
+      GUI[barName] or
+      Geyser.Gauge:new(
+        {
+          name = barName,
+          message = "",
+          x = 0, y = 0,
+          width = "100%",
+          height = "100%",
+        },GUI[barName.."Wrapper"])
+    GUI[barName].back:setStyleSheet(GUI.GaugeBackCSS:getCSS())
+    GUI.GaugeFrontCSS:set("background-color",section_color)
+    GUI[barName].front:setStyleSheet(GUI.GaugeFrontCSS:getCSS())
+	
+		barLabel = barName.."Label"
+		GUI[barLabel] =
+      GUI[barLabelame] or
+      Geyser.Label:new(
+        {
+          name = barLabel,
+          message = "",
+          x = 0, y = 0,
+          width = "100%",
+          height = "100%"
+        },GUI[barName])
+		GUI[barLabel]:setStyleSheet(GUI.BarLabelCSS:getCSS())
+		
+		if not table.contains(GUI.gauges, barName) then
+			table.insert(GUI.gauges, barName)
+		end
+		
+		if barName ~= "EHpBar" then GUI[barName]:setValue(math.random(100),100) else
+			GUI[barName]:setValue(0,100)
+			Character.EHp = 0
+			Character.Enemy = "No Enemy"
+			GUI[barLabel]:echo("&lt;b&gt;"..Character.Enemy.." ("..Character.EHp.."%)&lt;/b&gt;")
+		end
+	end
+	
+	
+   
+  GUI.BoxRoom = Geyser.Label:new({
+    name = "BoxRoom",
+  },GUI.FooterBottom)
+  GUI.BoxRoom:setStyleSheet(GUI.BoxFooterCSS:getCSS())
+  GUI.BoxRoom:echo("&lt;center&gt;&lt;font size=\""..(GUI.FontSize+2).."\"&gt;ðŸ“?&lt;/font&gt; &lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;Room&lt;/font&gt;&lt;/b&gt;")
+  
+  GUI.BoxArea = Geyser.Label:new({
+    name = "BoxArea",
+  },GUI.FooterBottom)
+  GUI.BoxArea:setStyleSheet(GUI.BoxFooterCSS:getCSS())
+  GUI.BoxArea:echo("&lt;center&gt;&lt;font size=\""..(GUI.FontSize+2).."\"&gt;ðŸ?°&lt;/font&gt; &lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;Area&lt;/font&gt;&lt;/b&gt;")
+  
+  GUI.BoxExits = Geyser.Label:new({
+    name = "BoxExits",
+  },GUI.FooterBottom)
+  GUI.BoxExits:setStyleSheet(GUI.BoxFooterCSS:getCSS())
+  GUI.BoxExits:echo("&lt;center&gt;&lt;font size=\""..(GUI.FontSize+2).."\"&gt;ðŸšª&lt;/font&gt; &lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;Exits&lt;/font&gt;&lt;/b&gt;")
+end
+
+function update_statusbars()
+	GUI.HpBar:setValue(Character.Hp.Current, Character.Hp.Max, "")
+	GUI.SpBar:setValue(Character.Sp.Current, Character.Sp.Max, "")
+	GUI.EpBar:setValue(Character.Ep.Current, Character.Ep.Max, "")
+	
+	GUI.HpBarLabel:echo("&lt;b&gt;"..Character.Hp.Current.."/"..Character.Hp.Max.."&lt;/b&gt;")
+	GUI.SpBarLabel:echo("&lt;b&gt;"..Character.Sp.Current.."/"..Character.Sp.Max.."&lt;/b&gt;")
+	GUI.EpBarLabel:echo("&lt;b&gt;"..Character.Ep.Current.."/"..Character.Ep.Max.."&lt;/b&gt;")
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+        <Script isActive="yes" isFolder="no">
+  <name>Flash_Button</name>
+          <script>GUI.FlashTimers = GUI.FlashTimers or {}
+GUI.Flashing = GUI.Flashing or {}
+
+function flashButtonBox(name, time, delay)
+	time = time or 1
+	delay = delay or 1
+	--setup "flashing" state
+	if GUI.Flashing[name] ~= true or not GUI.Flashing[name] then
+		GUI[name]:flash(time)
+		GUI.Flashing[name] = true
+		if GUI.FlashTimers[name] then killTimer(GUI.FlashTimers[name]) end		
+		GUI.FlashTimers[name] = tempTimer(delay, [[
+  		GUI["]]..name..[["]:flash(]]..time..[[)
+  		GUI.Flashing["]]..name..[["] = false 
+		]] )				
+	end
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+        <Script isActive="yes" isFolder="no">
+  <name>Refresh_on_Resize</name>
+          <script>function GUI.RefreshResize()
+
+    for index = 1, #GUI.icons do
+        local icon = GUI.icons[index]
+        --echo(string.format("%s, %d, %d\n", icon, GUI.button_height, GUI.button_height))
+        GUI[icon]:resize(GUI.button_height, GUI.button_height)
+    end
+    
+    for index = 1, #GUI.greys do
+        local grey = GUI.greys[index]
+        local boxName = string.split( grey, "Grey")[1]
+        --display(boxName)
+        --echo(grey.." "..boxName.."\n")			
+        GUI[grey]:resize(GUI[boxName]:get_width(), GUI.button_height)
+    end
+    
+    --[[for index = 1, #GUI.gauges do
+        local gauge = GUI.gauges[index]
+        local wrapper = gauge.."Wrapper"
+        GUI[gauge]:resize(GUI[wrapper]:get_width(), GUI[wrapper]:get_height())
+        GUI[gauge]:move(GUI[wrapper]:get_x(), GUI[wrapper]:get_y())
+    end]]
+    
+    local boxname = ""
+    for index = 1, #GUI.consoles do
+        local console = GUI.consoles[index]
+        if table.contains(chat_consoles, console) then
+            boxname = "ChatBox"
+        elseif table.contains(content_consoles, console) then
+            boxname = "ContentBox"
+        elseif table.contains(menu_consoles, console) then
+            boxname = "MenuBox"
+        end
+        --seperate the types if we need it later
+        if GUI[console].type == "miniConsole" then
+            GUI[console]:resize(GUI[boxname]:get_width()-tonumber(string.format("%.0f", GUI.ContentBox:get_width()*0.02)), 
+                GUI[boxname]:get_height()-tonumber(string.format("%.0f", GUI.ContentBox:get_width()*0.02)))
+            GUI[console]:move(GUI[boxname]:get_x()+tonumber(string.format("%.0f", GUI.ContentBox:get_width()*0.02)), 
+                GUI[boxname]:get_y()+tonumber(string.format("%.0f", GUI.ContentBox:get_width()*0.02)))
+            GUI[console]:setFontSize(GUI.ConsoleFontSize)
+        elseif GUI[console].type == "container" or GUI[console].type == "mapper" then
+            GUI[console]:resize(GUI[boxname]:get_width(), GUI[boxname]:get_height())
+            GUI[console]:move(GUI[boxname]:get_x(), GUI[boxname]:get_y())
+        end
+    end
+    
+    on_chat_box_press(GUI.CurrentChat)
+    on_content_box_press(GUI.CurrentContent)
+    on_menu_box_press(GUI.CurrentMenu)
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+        <Script isActive="yes" isFolder="no">
+  <name>Render_Console</name>
+          <script>function render_console(console_value, section_table)
+	--echo(console_value)
+	--display(section_table)
+	if section_table ~= nil then
+		clearWindow(console_value)
+    for index = 1, #section_table do
+			section_table[index](console_value)
+			--old code to replace GUI.colors, now in every section_table
+			--console_string = string.gsub(section_table[index](), "%$([%w_]+)", GUI.colors).."\n"
+  	end
+	end
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+        <Script isActive="yes" isFolder="no">
+  <name>Refresh_Tabs</name>
+          <script>--Refreshes open tabs in the Content or Menu areas (if necessary)
+GUI.TabRefresh = GUI.TabRefresh or true
+GUI.TabTimers = GUI.TabTimers or {}
+GUI.TabTimersDelay = GUI.TabTimersDelay or 10
+
+function killAllTabTimers()
+	local keys = table.keys(GUI.TabTimers)
+	for index = 1, #keys do
+		local name = keys[index]
+  	if GUI.TabTimers[name] then
+			killTimer(GUI.TabTimers[name])
+			GUI.TabTimers[name] = nil
+		end
+	end
+end
+
+function killTabTimer(name)
+	if GUI.TabTimers[name] then
+		--cecho("\n&lt;sky_blue&gt;killing tab timer: &lt;red&gt;"..name.."&lt;reset&gt;\n")
+		killTimer(GUI.TabTimers[name])
+		GUI.TabTimers[name] = nil	
+	end
+end
+
+function startTabTimer(name, delay)
+	if GUI.TabRefresh == true then
+  	delay = delay or GUI.TabTimersDelay
+  	if TabHandlers[name] then
+  		--cecho("&lt;sky_blue&gt;starting tab refresh... "..name.."&lt;reset&gt;\n")
+  		refreshTab(name, delay)
+  	end
+	end
+end
+
+function refreshTab(name, delay)
+	--cecho("\n&lt;sky_blue&gt;updating tab...&lt;reset&gt;")
+	delay = delay or GUI.TabTimersDelay
+	doTabRefresh(name)
+	if GUI.TabTimers[name] then killTimer(GUI.TabTimers[name]) end		
+	GUI.TabTimers[name] = tempTimer(delay, [[
+		--cecho("\n&lt;sky_blue&gt;timer called...&lt;reset&gt;")
+		refreshTab("]]..name..[[", "]]..delay..[[")
+	]] )
+end
+
+function doTabRefresh(name)
+  if GUI.TabRefresh == true then
+		enableTrigger("Suppress Prompt")
+  	TabHandlers[name]()
+	end
+end
+
+TabHandlers = TabHandlers or 
+		{
+			["CharacterConsole"] = function() refreshCharacter() end,
+			["AbilitiesConsole"] = function() refreshAbilities() end,
+			["InventoryConsole"] = function() refreshInventory() end,
+					
+			["ProgressContainer"] = function() refreshProgress() end,
+		}
+
+function refreshCharacter()
+	if table.contains(GUI.Mute, "Character.Score") == false then table.insert(GUI.Mute, "Character.Score") end
+	enableTrigger("Character.Score")
+	--cecho("&lt;sky_blue&gt;updating score...&lt;reset&gt;")
+	send("score", false)
+	
+	tempTimer( 2, function () render_console("CharacterConsole", content_body["CharacterConsole"] ) end )
+end
+	
+function refreshAbilities()
+	if table.contains(GUI.Mute, "Character.Skills") == false then table.insert(GUI.Mute, "Character.Skills") end
+	if table.contains(GUI.Mute, "Character.Exp") == false then table.insert(GUI.Mute, "Character.Exp") end
+	if table.contains(GUI.Mute, "Character.Spells") == false then table.insert(GUI.Mute, "Character.Spells") end
+	if table.contains(GUI.Mute, "Character.Align") == false then table.insert(GUI.Mute, "Character.Align") end
+	--cecho("&lt;sky_blue&gt;updating abilities...&lt;reset&gt;")
+	enableTrigger("Character.Skills")
+	enableTrigger("Character.Exp")
+	send("do exp; skills;", false)
+
+	enableTrigger("Character.Spells")
+	enableTrigger("Character.Align")
+	send("do align; spells;", false)
+	
+	tempTimer( 2, function () render_console("AbilitiesConsole", menu_body["AbilitiesConsole"] ) end )
+end
+
+function refreshInventory()
+	if table.contains(GUI.Mute, "Character.Inventory") == false then table.insert(GUI.Mute, "Character.Inventory") end
+	--cecho("&lt;sky_blue&gt;updating inventory...&lt;reset&gt;")
+	send("i", false)
+	
+	tempTimer( 2, function () render_console("InventoryConsole", menu_body["InventoryConsole"] ) end )
+end
+
+function refreshParty()
+	--if table.contains(GUI.Mute, "Character.Abilities") == false then table.insert(GUI.Mute, "Character.Abilities") end
+	--cecho("&lt;sky_blue&gt;updating party...&lt;reset&gt;")
+	--send("do skills; spells;")
+end
+
+function refreshProgress()
+	if table.contains(GUI.Mute, "Character.Score") == false then table.insert(GUI.Mute, "Character.Score") end
+	--cecho("&lt;sky_blue&gt;updating progress...&lt;reset&gt;")
+	enableTrigger("Character.Score")
+	send("score", false)
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+        <Script isActive="yes" isFolder="no">
+  <name>initGUI</name>
+          <script>function initGUI()
+	-- Container used to get console position
+  GUI.mainconsole_container = Geyser.Container:new({
+  	name = "mainconsole_container",
+  	x="0", y="10%",
+  	width="60%", height="80%",
+  })
+	
+	GUI.window_width = -1
+	GUI.window_height = -1
+	
+	GUI.UpdateBorderSizes()
+	GUI.CreateBackground()
+	GUI.CreateHeader()
+	GUI.CreateFooter()
+	GUI.CreateRight()
+		GUI.CreateChat()
+		GUI.CreateContent()
+		GUI.CreateMoney()
+		GUI.CreateMenu()
+		GUI.CreateStatus()
+	GUI.Initialized = true		
+	tempTimer(
+      1,
+      function()
+			--mapper
+      GUI.MapperConsole = GUI.MapperConsole or Geyser.Mapper:new(
+          {name = "MapperConsole", 
+					x = GUI.ContentBox:get_x(),
+            x = GUI.ContentBox:get_x(),
+            y = GUI.ContentBox:get_y(),
+            height = GUI.ContentBox:get_height(),
+            width = GUI.ContentBox:get_width()
+					}
+        )
+			--GUI.MapperConsole:raise()
+			GUI.MapperConsole:hide()
+
+			--call updates on all refreshable sections
+			on_menu_box_press("BoxProgress")
+			on_chat_box_press("BoxChatAll")
+	    on_content_box_press("BoxCharacter")	
+      end
+    )
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+</ScriptGroup>
+    <ScriptGroup isActive="yes" isFolder="yes">
+  <name>_Utilities</name>
+      <script/>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+      <Script isActive="yes" isFolder="no">
+  <name>globals</name>
+        <script>function firstToUpper(str)
+    return (str:gsub("^%l", string.upper))
+end
+
+-- from sam_lie
+-- Compatible with Lua 5.0 and 5.1.
+-- Disclaimer : use at own risk
+
+---============================================================
+-- add comma to separate thousands
+-- 
+function comma_value(amount)
+  local formatted = amount
+  while true do  
+    formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+    if (k==0) then
+      break
+    end
+  end
+  return formatted
+end
+
+---============================================================
+-- rounds a number to the nearest decimal places
+--
+function round(val, decimal)
+  if (decimal) then
+    return math.floor( (val * 10^decimal) + 0.5) / (10^decimal)
+  else
+    return math.floor(val+0.5)
+  end
+end
+
+--===================================================================
+-- given a numeric value formats output with comma to separate thousands
+-- and rounded to given decimal places
+--
+--
+function format_num(amount, decimal, prefix, neg_prefix)
+  local str_amount,  formatted, famount, remain
+
+  decimal = decimal or 2  -- default 2 decimal places
+  neg_prefix = neg_prefix or "-" -- default negative sign
+
+  famount = math.abs(round(amount,decimal))
+  famount = math.floor(famount)
+
+  remain = round(math.abs(amount) - famount, decimal)
+
+        -- comma to separate the thousands
+  formatted = comma_value(famount)
+
+        -- attach the decimal portion
+  if (decimal &gt; 0) then
+    remain = string.sub(tostring(remain),3)
+    formatted = formatted .. "." .. remain ..
+                string.rep("0", decimal - string.len(remain))
+  end
+
+        -- attach prefix string e.g '$' 
+  formatted = (prefix or "") .. formatted 
+
+        -- if value is negative then format accordingly
+  if (amount&lt;0) then
+    if (neg_prefix=="()") then
+      formatted = "("..formatted ..")"
+    else
+      formatted = neg_prefix .. formatted 
+    end
+  end
+
+  return formatted
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+      <Script isActive="yes" isFolder="no">
+  <name>gui.utilities</name>
+        <script>function enable_tooltip(message)
+	--echo(message.."\n")
+	GUI.TooltipLabel:echo(message)
+end
+
+function disable_tooltip(message)
+	GUI.TooltipLabel:echo(message)
+end
+
+function set_icon(iconName, iconCSS, section_icon, tooltip_value)
+  iconURL = 'url("'..getMudletHomeDir():gsub("\\","/")..'/IoMCore/images/static-icons/'..section_icon..'")'
+ 	GUI[iconCSS]:set("border-image", iconURL)
+  GUI[iconName]:setStyleSheet(GUI[iconCSS]:getCSS())
+  GUI[iconCSS]:set("border-image", "")
+
+  GUI[iconName]:setOnEnter(
+    "enable_tooltip",
+    "&lt;b&gt;&lt;font size=\"4\"&gt;" .. tooltip_value .. "&lt;/font&gt;&lt;/b&gt;"
+  )
+  GUI[iconName]:setOnLeave(
+    "disable_tooltip",
+    ""
+  )
+	if not table.contains(GUI.icons, iconName) then
+		table.insert(GUI.icons, iconName)
+	end
+end
+
+function set_greybox(section_value, refCSS, tooltip_value, callback)
+	GUI[section_value.."Grey"] =
+    Geyser.Label:new(
+      {
+        name = section_value.."Grey",
+        message = "",
+				x=0, y=0,
+				width=GUI[section_value]:get_width(), height=GUI[section_value.."Icon"]:get_height()
+      },
+      GUI[section_value]
+    )
+  	GUI[refCSS]:set("background-color", "rgba(0,0,0,160)")
+    GUI[section_value.."Grey"]:setStyleSheet(GUI[refCSS]:getCSS())
+    GUI[refCSS]:set("background-color", "rgba(0,0,0,0)")
+		GUI[section_value.."Grey"]:setOnEnter(
+      "enable_tooltip",
+      "&lt;b&gt;&lt;font size=\"4\"&gt;" .. tooltip_value .. "&lt;/font&gt;&lt;/b&gt;"
+    )
+    GUI[section_value.."Grey"]:setOnLeave(
+      "disable_tooltip",
+      ""
+    )
+    GUI[section_value .. "Grey"]:setClickCallback(callback, section_value)
+		if not table.contains(GUI.greys, section_value.."Grey") then
+  		table.insert(GUI.greys, section_value.."Grey")
+  	end
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+      <Script isActive="yes" isFolder="no">
+  <name>set_user_prompt</name>
+        <script>--Sets a custom prompt specific to Ilsands of Mtyh
+
+--[[
+		complex prompt for use without GUI
+		local promptCode = "%^BOLD%^%^GREEN%^%N%^RESET%^ %^CYAN%^%x%^RESET%^(%X) %^ORANGE%^%G%^RESET%^g%RHP%^BOLD%^%^GREEN%^%h%^RESET%^/%^BOLD%^%^GREEN%^%H%^RESET%^ SP%^BOLD%^%^CYAN%^%s%^RESET%^/%^BOLD%^%^CYAN%^%S%^RESET%^ EP%^BOLD%^%^MAGENTA%^%e%^RESET%^/%^BOLD%^%^MAGENTA%^%E%^RESET%^ %^BOLD%^%^GREEN%^$%^RESET%^"
+	]]
+	
+-- simple prompt for use with GUI
+
+local promptCode = "%^BOLD%^%^GREEN%^$%^RESET%^"
+function setPrompt()
+	send("prompt '"..promptCode.."'")
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+      <Script isActive="yes" isFolder="no">
+  <name>switch</name>
+        <script>switch = function (choice, cases)
+    -- accepts both number as well as string
+    choice = choice and tonumber(choice) or choice     -- returns a number if the choic is a number or string. 
+      --display(cases)
+      --echo(choice)
+    -- Define your cases
+    cases = cases or
+     {
+       [1] = function ( )                              -- case 1 : 
+               print("your choice is Number 1 ")       -- code block
+       end,                                            -- break statement
+  
+       add = function ( )                              -- case 'add' : 
+               print("your choice is string add ")     -- code block
+       end,                                            -- break statement
+  
+      ['+'] = function ( )                             -- case '+' : 
+               print("your choice is char + ")         -- code block
+       end,                                            -- break statement
+  
+       default = function ( )                          -- default case
+               print("no match for "..choice)   
+       end,                                            -- u cant exclude end hear :-P
+     }
+       
+      if not cases["default"] then cases["default"] = print("no match for "..choice.." provided") end
+  
+      
+    -- execution section
+    if cases[choice] then
+       return cases[choice]
+    else
+       return cases["default"]
+    end
+  
+  end
+  -- Now you can use it as a regular function. Tadaaa..!!
+  --switch(mychoice)</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+      <Script isActive="yes" isFolder="no">
+  <name>table.find</name>
+        <script>--table.find()
+function table.find(t, val, recursive, metatables, keys, returnBool)
+    if (type(t) ~= "table") then
+        return nil
+    end
+
+    local checked = {}
+    local _findInTable
+    local _checkValue
+    _checkValue = function(v)
+        if (not checked[v]) then
+            if (v == val) then
+                return v
+            end
+            if (recursive and type(v) == "table") then
+                local r = _findInTable(v)
+                if (r ~= nil) then
+                    return r
+                end
+            end
+            if (metatables) then
+                local r = _checkValue(getmetatable(v))
+                if (r ~= nil) then
+                    return r
+                end
+            end
+            checked[v] = true
+        end
+        return nil
+    end
+    _findInTable = function(t)
+        for k,v in pairs(t) do
+            local r = _checkValue(t, v)
+            if (r ~= nil) then
+                return r
+            end
+            if (keys) then
+                r = _checkValue(t, k)
+                if (r ~= nil) then
+                    return r
+                end
+            end
+        end
+        return nil
+    end
+
+    local r = _findInTable(t)
+    if (returnBool) then
+        return r ~= nil
+    end
+    return r
+end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+</ScriptGroup>
+</ScriptPackage>
+  <AliasPackage>
+</AliasPackage>
+  <TimerPackage>
+</TimerPackage>
+  <TriggerPackage>
+</TriggerPackage>
+  <KeyPackage>
+</KeyPackage>
+</MudletPackage>

@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Create_Chat",
+        "isActive": "yes"
+    },
+    {
+        "name": "Create_Content",
+        "isActive": "yes"
+    },
+    {
+        "name": "Create_Menu",
+        "isActive": "yes"
+    },
+    {
+        "name": "Create_Money",
+        "isActive": "yes"
+    },
+    {
+        "name": "Create_Status",
+        "isActive": "yes"
+    }
+]

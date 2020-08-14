@@ -1,0 +1,8 @@
+[
+    {
+        "name": "examine",
+        "isActive": "yes",
+        "command": "",
+        "regex": "^x(?: (.*))?$"
+    }
+]

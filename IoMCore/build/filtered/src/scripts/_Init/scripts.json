@@ -1,0 +1,26 @@
+[
+    {
+        "name": "GUI.init",
+        "isActive": "yes"
+    },
+    {
+        "name": "sys.init.lua",
+        "isActive": "yes",
+        "eventHandlerList": [
+            "sysExitEvent",
+            "sysLoadEvent"
+        ]
+    },
+    {
+        "name": "Character_init",
+        "isActive": "yes"
+    },
+    {
+        "name": "Character_io",
+        "isActive": "yes"
+    },
+    {
+        "name": "GUI.Lookup_init",
+        "isActive": "yes"
+    }
+  ]

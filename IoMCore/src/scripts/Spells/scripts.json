@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Spell_Aliases",
+        "isActive": "yes"
+    },
+    {
+        "name": "Cast_Spell",
+        "isActive": "yes"
+    }
+]

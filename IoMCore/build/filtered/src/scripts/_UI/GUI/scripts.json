@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Border_and_Font_Sizes",
+        "isActive": "yes"
+    },
+    {
+        "name": "Create_Background",
+        "isActive": "yes"
+    },
+    {
+        "name": "Create_Header",
+        "isActive": "yes"
+    },
+    {
+        "name": "Create_Footer",
+        "isActive": "yes"
+    },
+    {
+        "name": "Create_Right",
+        "isActive": "yes"
+    },
+    {
+        "name": "Flash_Button",
+        "isActive": "yes"
+    },
+    {
+        "name": "Refresh_on_Resize",
+        "isActive": "yes"
+    },
+    {
+        "name": "Render_Console",
+        "isActive": "yes"
+    },
+    {
+        "name": "Refresh_Tabs",
+        "isActive": "yes"
+    },
+    {
+        "name": "initGUI",
+        "isActive": "yes"
+    }
+]

@@ -1,0 +1,20 @@
+[
+    {
+        "name": "party_create",
+        "isActive": "yes",
+        "command": "",
+        "regex": "^party create(?: (.*))?$"
+    },
+    {
+        "name": "party_add",
+        "isActive": "yes",
+        "command": "",
+        "regex": "^party add (.*)"
+    },
+    {
+        "name": "party_up",
+        "isActive": "yes",
+        "command": "",
+        "regex": "^party up"
+    }
+]

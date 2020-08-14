@@ -1,0 +1,22 @@
+[
+    {
+        "name": "globals",
+        "isActive": "yes"
+    },
+    {
+        "name": "gui.utilities",
+        "isActive": "yes"
+    },
+    {
+        "name": "set_user_prompt",
+        "isActive": "yes"
+    },
+    {
+        "name": "switch",
+        "isActive": "yes"
+    },
+    {
+        "name": "table.find",
+        "isActive": "yes"
+    }
+  ]

@@ -1,0 +1,10 @@
+[
+    {
+        "name": "sysWindowResizeEvent",
+        "isActive": "yes"
+    },
+    {
+        "name": "sysDisconnectionEvent",
+        "isActive": "yes"
+    }
+]
