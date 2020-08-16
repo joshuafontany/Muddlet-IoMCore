@@ -1,0 +1,1 @@
+doHotkey(2)

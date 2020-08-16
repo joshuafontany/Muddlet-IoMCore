@@ -1,0 +1,14 @@
+[
+    {
+        "name": "RDMP_ON",
+        "isActive": "yes",
+        "command": "",
+        "regex": "^RDMP ON (\\d{4})$"
+    },
+    {
+        "name": "RDMP_OFF",
+        "isActive": "yes",
+        "command": "",
+        "regex": "^RDMP OFF$"
+    }
+]

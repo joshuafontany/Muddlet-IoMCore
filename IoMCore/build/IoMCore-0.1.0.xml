@@ -3392,11 +3392,568 @@ end</script>
 </ScriptGroup>
 </ScriptPackage>
   <AliasPackage>
+    <AliasGroup isActive="yes" isFolder="yes">
+  <name>Character</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <regex/>
+      <Alias isActive="yes" isFolder="no">
+  <name>score</name>
+        <script>if table.contains(GUI.Mute, "Character.Score") then
+    table.remove(GUI.Mute, table.index_of(GUI.Mute, "Character.Score"))
+  end
+  enableTrigger("Character.Score")
+  send("score", false)
+  tempTimer( 2, function () render_console("CharacterConsole", menu_body["CharacterConsole"] ) end )</script>
+  <command/>
+  <packageName/>
+  <regex>^score$</regex>
+</Alias>
+      <Alias isActive="yes" isFolder="no">
+  <name>stats</name>
+        <script>enableTrigger("Character.Stats")
+send("stats", false)</script>
+  <command/>
+  <packageName/>
+  <regex>^stats$</regex>
+</Alias>
+      <Alias isActive="yes" isFolder="no">
+  <name>exp</name>
+        <script>enableTrigger("Character.Exp")
+send("exp", false)</script>
+  <command>^exp$</command>
+  <packageName/>
+  <regex/>
+</Alias>
+      <Alias isActive="yes" isFolder="no">
+  <name>i</name>
+        <script>if table.contains(GUI.Mute, "Character.Inventory") then
+    table.remove(GUI.Mute, table.index_of(GUI.Mute, "Character.Inventory"))
+  end
+  send("i", false)
+  tempTimer( 2, function () render_console("InventoryConsole", menu_body["InventoryConsole"] ) end )</script>
+  <command/>
+  <packageName/>
+  <regex>^i$</regex>
+</Alias>
+      <Alias isActive="yes" isFolder="no">
+  <name>skills</name>
+        <script>if table.contains(GUI.Mute, "Character.Skills") == true then
+	table.remove(GUI.Mute, table.index_of(GUI.Mute, "Character.Skills"))
+end
+if table.contains(GUI.Mute, "Character.Exp") == false then
+	table.insert(GUI.Mute, "Character.Exp")
+end
+disableTrigger("Character.Spells")
+enableTrigger("Character.Skills")
+enableTrigger("Character.Exp")
+--cecho("&lt;sky_blue&gt;updating skills...&lt;reset&gt;")
+send("do exp; skills;", false)</script>
+  <command/>
+  <packageName/>
+  <regex>^skills$</regex>
+</Alias>
+      <Alias isActive="yes" isFolder="no">
+  <name>spells</name>
+        <script>if table.contains(GUI.Mute, "Character.Spells") == true then
+	table.remove(GUI.Mute, table.index_of(GUI.Mute, "Character.Spells"))
+end
+if table.contains(GUI.Mute, "Character.Align") == false then
+	table.insert(GUI.Mute, "Character.Align")
+end
+disableTrigger("Character.Skills")
+enableTrigger("Character.Spells")
+enableTrigger("Character.Align")
+--cecho("&lt;sky_blue&gt;updating spells...&lt;reset&gt;")
+send("do align; spells;", false)</script>
+  <command/>
+  <packageName/>
+  <regex>^spells$</regex>
+</Alias>
+</AliasGroup>
+    <AliasGroup isActive="yes" isFolder="yes">
+  <name>Nav</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <regex/>
+      <Alias isActive="yes" isFolder="no">
+  <name>examine</name>
+        <script>if matches[2] then
+	send( "examine " .. matches[2])
+else
+	send("do x; search;")
+end</script>
+  <command/>
+  <packageName/>
+  <regex>^x(?: (.*))?$</regex>
+</Alias>
+</AliasGroup>
+    <AliasGroup isActive="yes" isFolder="yes">
+  <name>Party</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <regex/>
+      <Alias isActive="yes" isFolder="no">
+  <name>Set_Party_Target</name>
+        <script>if matches[2] then
+    Character.Target = matches[2]
+    send("p' ptarget "..Character.Target)
+  else
+      Character.Target = ""	
+  end
+  </script>
+  <command/>
+  <packageName/>
+  <regex>^ptarget(?: (.*))?$</regex>
+</Alias>
+      <AliasGroup isActive="yes" isFolder="yes">
+  <name>Party_Up</name>
+        <script/>
+  <command/>
+  <packageName/>
+  <regex/>
+        <Alias isActive="yes" isFolder="no">
+  <name>party_create</name>
+          <script>send("party create "..matches[2])
+Party.Name = matches[2]</script>
+  <command/>
+  <packageName/>
+  <regex>^party create(?: (.*))?$</regex>
+</Alias>
+        <Alias isActive="yes" isFolder="no">
+  <name>party_add</name>
+          <script>names = {}
+s = matches[2]
+for substring in s:gmatch("%S+") do
+   table.insert(names, substring)
+end
+display(names)
+
+for i = 1, #names do
+  name = names[i]
+	if table.find(Party.Roster, name) ~= true then
+		table.insert(Party.Roster, name)
+	end
+end
+
+echo("Party (" .. #Party.Roster .. ")")
+display(Party.Roster)</script>
+  <command/>
+  <packageName/>
+  <regex>^party add (.*)</regex>
+</Alias>
+        <Alias isActive="yes" isFolder="no">
+  <name>party_up</name>
+          <script>for i = 1, #Party.Roster do
+    send("party invite " .. Party.Roster[i])
+ end</script>
+  <command/>
+  <packageName/>
+  <regex>^party up</regex>
+</Alias>
+</AliasGroup>
+</AliasGroup>
+    <AliasGroup isActive="yes" isFolder="yes">
+  <name>RDMP</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <regex/>
+      <Alias isActive="yes" isFolder="no">
+  <name>RDMP_ON</name>
+        <script>if matches[2] then
+    Character.RDMPCode = matches[2]
+      Character.RDMPStatus = "ON"
+    send("RDMP ON "..2332, false)
+  end</script>
+  <command/>
+  <packageName/>
+  <regex>^RDMP ON (\d{4})$</regex>
+</Alias>
+      <Alias isActive="yes" isFolder="no">
+  <name>RDMP_OFF</name>
+        <script>Character.RDMPStatus = "OFF"
+GUI.HpBar:setValue(0, 100, "")
+GUI.SpBar:setValue(0, 100, "")
+GUI.EpBar:setValue(0, 100, "")
+GUI.EHpBar:setValue(0, 100, "")
+
+GUI.HpBarLabel:echo("&lt;b&gt;RDMP OFF&lt;/b&gt;")
+GUI.SpBarLabel:echo("&lt;b&gt;RDMP OFF&lt;/b&gt;")
+GUI.EpBarLabel:echo("&lt;b&gt;RDMP OFF&lt;/b&gt;")
+GUI.EHpBarLabel:echo("&lt;b&gt;RDMP OFF&lt;/b&gt;")
+
+send("RDMP OFF", false)</script>
+  <command/>
+  <packageName/>
+  <regex>^RDMP OFF$</regex>
+</Alias>
+</AliasGroup>
+    <AliasGroup isActive="yes" isFolder="yes">
+  <name>Skills</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <regex/>
+      <Alias isActive="yes" isFolder="no">
+  <name>use_skill</name>
+        <script>if matches[2] then
+	local cmdArr = {}
+	local target
+	if string.match(matches[2], " at ") ~= nil then
+		cmdArr = string.split(matches[2], " at ")		
+	elseif string.match(matches[2], " on ") ~= nil then
+		cmdArr = string.split(matches[2], " on ")
+	else
+		cmdArr = {matches[2]}
+	end
+	if #cmdArr &gt; 1 then
+		targetArr = string.split(cmdArr[2], " ")
+	else
+		targetArr = {}
+	end
+	--display(cmdArr)
+	local name = cmdArr[1]
+	name = skillAlias(name)
+	useSkill(name, targetArr)
+end</script>
+  <command/>
+  <packageName/>
+  <regex>^use\s?(.*)$</regex>
+</Alias>
+</AliasGroup>
+    <AliasGroup isActive="yes" isFolder="yes">
+  <name>Spells</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <regex/>
+      <Alias isActive="yes" isFolder="no">
+  <name>cast_spell</name>
+        <script>if matches[2] then
+	local cmdArr = {}
+	local target
+	if string.match(matches[2], " at ") ~= nil then
+		cmdArr = string.split(matches[2], " at ")		
+	elseif string.match(matches[2], " on ") ~= nil then
+		cmdArr = string.split(matches[2], " on ")
+	else
+		cmdArr = {matches[2]}
+	end
+	if #cmdArr &gt; 1 then
+		targetArr = string.split(cmdArr[2], " ")
+	else
+		targetArr = {}
+	end
+	--display(cmdArr)
+	local name = cmdArr[1]
+	name = spellAlias(name)
+	castSpell(name, targetArr)
+end</script>
+  <command/>
+  <packageName/>
+  <regex>^cast\s?(.*)$</regex>
+</Alias>
+</AliasGroup>
+    <AliasGroup isActive="yes" isFolder="yes">
+  <name>Targets</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <regex/>
+      <Alias isActive="yes" isFolder="no">
+  <name>set_target</name>
+        <script>if matches[2] ~= "" then
+    Character.Target = matches[2]
+    send("do x first " .. Character.Target .."; consider first " .. Character.Target)
+  elseif matches[2] == "" then
+      Character.Target = ""
+  end</script>
+  <command/>
+  <packageName/>
+  <regex>^target(?: (.*))?$</regex>
+</Alias>
+      <Alias isActive="yes" isFolder="no">
+  <name>set_ally</name>
+        <script>if matches[2] then
+	Character.Ally = matches[2]
+else
+	Character.Ally = Character.Name
+end</script>
+  <command/>
+  <packageName/>
+  <regex>^ally(?: (.*))?$</regex>
+</Alias>
+      <Alias isActive="yes" isFolder="no">
+  <name>attack_target</name>
+        <script>if matches[2] then
+	Character.Target = matches[2]
+	send("kill "..Character.Selector.." "..Character.Target)
+elseif Character.Enemy ~= "No Enemy" then
+	send("kill "..Character.Selector.." "..Character.Enemy)
+elseif Character.Target ~= "" then
+	send("kill "..Character.Selector.." "..Character.Target)
+else
+cecho("&lt;sky_blue&gt;No Enemy or Target provided...")
+end</script>
+  <command/>
+  <packageName/>
+  <regex>^(?:kill|attack) ?([\w\s]+)?$</regex>
+</Alias>
+</AliasGroup>
+    <AliasGroup isActive="yes" isFolder="yes">
+  <name>Utility</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <regex/>
+      <Alias isActive="yes" isFolder="no">
+  <name>set_prompt</name>
+        <script/>
+  <command/>
+  <packageName/>
+  <regex>^setPrompt$</regex>
+</Alias>
+      <Alias isActive="yes" isFolder="no">
+  <name>reset_stats_enemy</name>
+        <script>if matches[2] == " stats" then
+    enableTrigger("Character.ResetStats")
+    send("do remove all;stats")
+  elseif matches[3] == " enemy" then
+      GUI.resetEnemy()
+  else
+  
+  end
+  
+  function GUI.resetEnemy()
+      cecho("&lt;sky_blue&gt;enemy reset...")
+      Character.Enemy = "No Enemy"
+      Character.EHp = 0
+      GUI.EHpBar:setValue(Character.EHp)
+      GUI.EHpBarLabel:echo("&lt;b&gt;"..Character.Enemy.." ("..Character.EHp.."%)&lt;/b&gt;")
+  end</script>
+  <command/>
+  <packageName/>
+  <regex>^reset( stats)?( enemy)?$</regex>
+</Alias>
+</AliasGroup>
 </AliasPackage>
   <TimerPackage>
 </TimerPackage>
   <TriggerPackage>
 </TriggerPackage>
   <KeyPackage>
+    <KeyGroup isActive="yes" isFolder="yes">
+  <name>Hotkeys</name>
+  <packageName/>
+      <script/>
+  <command/>
+  <keyCode>-1</keyCode>
+  <keyModifier>-1</keyModifier>
+      <Key isActive="yes" isFolder="no">
+  <name>alt+quoteleft</name>
+  <packageName/>
+        <script/>
+  <command/>
+  <keyCode/>
+  <keyModifier>134217728</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>alt+1</name>
+  <packageName/>
+        <script>echo("test")
+doHotkey(1)</script>
+  <command/>
+  <keyCode>49</keyCode>
+  <keyModifier>134217728</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>alt+2</name>
+  <packageName/>
+        <script>doHotkey(2)</script>
+  <command/>
+  <keyCode>50</keyCode>
+  <keyModifier>134217728</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>alt+3</name>
+  <packageName/>
+        <script>doHotkey(3)</script>
+  <command/>
+  <keyCode>51</keyCode>
+  <keyModifier>134217728</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>alt+4</name>
+  <packageName/>
+        <script>doHotkey(4)</script>
+  <command/>
+  <keyCode>52</keyCode>
+  <keyModifier>134217728</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>alt+5</name>
+  <packageName/>
+        <script>doHotkey(5)</script>
+  <command/>
+  <keyCode>53</keyCode>
+  <keyModifier>134217728</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>alt+6</name>
+  <packageName/>
+        <script>doHotkey(6)</script>
+  <command/>
+  <keyCode>54</keyCode>
+  <keyModifier>134217728</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>alt+7</name>
+  <packageName/>
+        <script>doHotkey(7)</script>
+  <command/>
+  <keyCode>55</keyCode>
+  <keyModifier>134217728</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>alt+8</name>
+  <packageName/>
+        <script>doHotkey(8)</script>
+  <command/>
+  <keyCode>56</keyCode>
+  <keyModifier>134217728</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>alt+9</name>
+  <packageName/>
+        <script>doHotkey(9)</script>
+  <command/>
+  <keyCode>57</keyCode>
+  <keyModifier>134217728</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>alt+0</name>
+  <packageName/>
+        <script>doHotkey(0)</script>
+  <command/>
+  <keyCode>48</keyCode>
+  <keyModifier>134217728</keyModifier>
+</Key>
+</KeyGroup>
+    <KeyGroup isActive="yes" isFolder="yes">
+  <name>Nav</name>
+  <packageName/>
+      <script/>
+  <command/>
+  <keyCode>-1</keyCode>
+  <keyModifier>-1</keyModifier>
+      <Key isActive="yes" isFolder="no">
+  <name>North</name>
+  <packageName/>
+        <script/>
+  <command>n</command>
+  <keyCode>16777235</keyCode>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>NE</name>
+  <packageName/>
+        <script/>
+  <command>ne</command>
+  <keyCode/>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>East</name>
+  <packageName/>
+        <script/>
+  <command>e</command>
+  <keyCode>16777236</keyCode>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>SE</name>
+  <packageName/>
+        <script/>
+  <command>se</command>
+  <keyCode/>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>South</name>
+  <packageName/>
+        <script/>
+  <command>s</command>
+  <keyCode>16777237</keyCode>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>SW</name>
+  <packageName/>
+        <script/>
+  <command>sw</command>
+  <keyCode>16777233</keyCode>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>West</name>
+  <packageName/>
+        <script/>
+  <command>w</command>
+  <keyCode>16777234</keyCode>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>NW</name>
+  <packageName/>
+        <script/>
+  <command>nw</command>
+  <keyCode>16777232</keyCode>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>Up</name>
+  <packageName/>
+        <script/>
+  <command>up</command>
+  <keyCode>43</keyCode>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>Down</name>
+  <packageName/>
+        <script/>
+  <command>down</command>
+  <keyCode/>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>Look</name>
+  <packageName/>
+        <script/>
+  <command>look</command>
+  <keyCode>16777227</keyCode>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>Map</name>
+  <packageName/>
+        <script/>
+  <command>map</command>
+  <keyCode/>
+  <keyModifier>536870912</keyModifier>
+</Key>
+      <Key isActive="yes" isFolder="no">
+  <name>Search</name>
+  <packageName/>
+        <script/>
+  <command>search</command>
+  <keyCode/>
+  <keyModifier>536870912</keyModifier>
+</Key>
+</KeyGroup>
 </KeyPackage>
 </MudletPackage>

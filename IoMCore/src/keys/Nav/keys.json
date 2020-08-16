@@ -1,0 +1,80 @@
+[
+    {
+      "name": "North",
+      "isActive": "yes",
+      "keys": "keypad+Up",
+      "command": "n"
+    },
+    {
+        "name": "NE",
+        "isActive": "yes",
+        "keys": "keypad+PageUp",
+        "command": "ne"
+    },
+    {
+        "name": "East",
+        "isActive": "yes",
+        "keys": "keypad+Right",
+        "command": "e"
+    },
+    {
+        "name": "SE",
+        "isActive": "yes",
+        "keys": "keypad+PageDown",
+        "command": "se"
+    },
+    {
+        "name": "South",
+        "isActive": "yes",
+        "keys": "keypad+Down",
+        "command": "s"
+    },
+    {
+        "name": "SW",
+        "isActive": "yes",
+        "keys": "keypad+End",
+        "command": "sw"
+    },
+    {
+        "name": "West",
+        "isActive": "yes",
+        "keys": "keypad+Left",
+        "command": "w"
+    },
+    {
+        "name": "NW",
+        "isActive": "yes",
+        "keys": "keypad+Home",
+        "command": "nw"
+    },
+    {
+        "name": "Up",
+        "isActive": "yes",
+        "keys": "keypad+Plus",
+        "command": "up"
+    },
+    {
+        "name": "Down",
+        "isActive": "yes",
+        "keys": "keypad+Minus",
+        "command": "down"
+    },
+    {
+        "name": "Look",
+        "isActive": "yes",
+        "keys": "keypad+Clear",
+        "command": "look"
+    },
+    {
+        "name": "Map",
+        "isActive": "yes",
+        "keys": "keypad+Insert",
+        "command": "map"
+    },
+    {
+        "name": "Search",
+        "isActive": "yes",
+        "keys": "keypad+Delete",
+        "command": "search"
+    }
+  ]

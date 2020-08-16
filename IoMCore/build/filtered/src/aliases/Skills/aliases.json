@@ -1,0 +1,8 @@
+[
+    {
+        "name": "use_skill",
+        "isActive": "yes",
+        "command": "",
+        "regex": "^use\\s?(.*)$"
+    }
+]

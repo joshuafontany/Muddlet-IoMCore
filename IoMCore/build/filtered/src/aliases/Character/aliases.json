@@ -1,0 +1,38 @@
+[
+    {
+        "name": "score",
+        "isActive": "yes",
+        "command": "",
+        "regex": "^score$"
+    },
+    {
+        "name": "stats",
+        "isActive": "yes",
+        "command": "",
+        "regex":"^stats$"
+    },
+    {
+        "name": "exp",
+        "isActive": "yes",
+        "command": "^exp$",
+        "regex":""
+    },
+    {
+        "name": "i",
+        "isActive": "yes",
+        "command": "",
+        "regex":"^i$"
+    },
+    {
+        "name": "skills",
+        "isActive": "yes",
+        "command": "",
+        "regex":"^skills$"
+    },
+    {
+        "name": "spells",
+        "isActive": "yes",
+        "command": "",
+        "regex":"^spells$"
+    }
+]

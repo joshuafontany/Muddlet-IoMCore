@@ -1,0 +1,14 @@
+[
+    {
+        "name": "set_prompt",
+        "isActive": "yes",
+        "command": "",
+        "regex": "^setPrompt$"
+    },
+    {
+        "name": "reset_stats_enemy",
+        "isActive": "yes",
+        "command": "",
+        "regex": "^reset( stats)?( enemy)?$"
+    }
+]

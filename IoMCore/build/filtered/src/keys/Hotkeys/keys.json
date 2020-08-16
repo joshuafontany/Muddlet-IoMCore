@@ -1,0 +1,57 @@
+[
+    {
+      "name": "alt+quoteleft",
+      "isActive": "yes",
+      "keys": "alt+QuoteLeft"
+    },
+    {
+        "name": "alt+1",
+        "isActive": "yes",
+        "keys": "alt+1"
+    },
+    {
+        "name": "alt+2",
+        "isActive": "yes",
+        "keys": "alt+2"
+    },
+    {
+        "name": "alt+3",
+        "isActive": "yes",
+        "keys": "alt+3"
+    },
+    {
+        "name": "alt+4",
+        "isActive": "yes",
+        "keys": "alt+4"
+    },
+    {
+        "name": "alt+5",
+        "isActive": "yes",
+        "keys": "alt+5"
+    },
+    {
+        "name": "alt+6",
+        "isActive": "yes",
+        "keys": "alt+6"
+    },
+    {
+        "name": "alt+7",
+        "isActive": "yes",
+        "keys": "alt+7"
+    },
+    {
+        "name": "alt+8",
+        "isActive": "yes",
+        "keys": "alt+8"
+    },
+    {
+        "name": "alt+9",
+        "isActive": "yes",
+        "keys": "alt+9"
+    },
+    {
+        "name": "alt+0",
+        "isActive": "yes",
+        "keys": "alt+0"
+    }
+  ]

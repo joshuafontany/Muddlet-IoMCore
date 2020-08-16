@@ -1,0 +1,8 @@
+[
+    {
+        "name": "cast_spell",
+        "isActive": "yes",
+        "command": "",
+        "regex": "^cast\\s?(.*)$"
+    }
+]
