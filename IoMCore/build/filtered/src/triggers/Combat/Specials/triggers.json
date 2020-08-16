@@ -1,0 +1,29 @@
+[
+  {
+    "name": "It_Stuns_You",
+    "isActive": "yes",
+    "multiline": "yes",
+    "multielineDelta": "3",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^(?:[\\w\\s\\.]+) stuns you with the force of its attack!$",
+        "type": "regex"
+      },
+      {
+        "pattern": "^You break your concentration.$",
+        "type": "regex"
+      },
+      {
+        "pattern": "^Your concentration is interrupted.$",
+        "type": "regex"
+      }
+    ]
+  }
+]

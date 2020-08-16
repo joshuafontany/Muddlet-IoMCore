@@ -1,1 +1,277 @@
-[]
+[
+  {
+    "name": "Mute_Mud_Data",
+    "isActive": "no",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "return true",
+        "type": "lua"
+      }
+    ]
+  },
+  {
+    "name": "doLogin",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^You enter Islands of Myth.(?:Welcome to Islands of Myth!)?$",
+        "type": "regex"
+      },
+      {
+        "pattern": "^A dark, sucking portal appears. You fall from it!$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "loginData",
+    "isActive": "no",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^Verbose mode is now on.$",
+        "type": "regex"
+      },
+      {
+        "pattern": "^(?:=-){5,}$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Character.Score",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^,-+.$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Character.Stats",
+    "isActive": "no",
+    "multiline": "yes",
+    "multielineDelta": "2",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^Stats:$",
+        "type": "regex"
+      },
+      {
+        "pattern": "^\\sStr:\\s\\d+\\s+Dex:\\s\\d+\\s+Con:\\s\\d+\\s+Sta:\\s\\d+\\s+Int:\\s\\d+\\s+Wis:\\s\\d+\\s+Cha:\\s\\d+$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Character.ResetStats",
+    "isActive": "no",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^Stats:$",
+        "type": "regex"
+      },
+      {
+        "pattern": "^\\sStr:\\s\\d+\\s+Dex:\\s\\d+\\s+Con:\\s\\d+\\s+Sta:\\s\\d+\\s+Int:\\s\\d+\\s+Wis:\\s\\d+\\s+Cha:\\s\\d+$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Character.Exp",
+    "isActive": "no",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^\\sExp:\\s([\\w,]+)\\s*Next\\slevel:\\s([\\w,]+)\\s*Money:\\s([\\w,]+) gold$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Character.Align",
+    "isActive": "no",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^You are currently ([\\w\\s\\.]+)$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Character.Eq",
+    "isActive": "yes",
+    "multiline": "yes",
+    "multielineDelta": "1",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^\\s{3}-+\\s{3}$",
+        "type": "regex"
+      },
+      {
+        "pattern": "^\\s{3}\\|\\s+([\\w\\s()]+?)?\\s{2,}\\|\\s{3}$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Character.InventoryCapacity",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^Weight\\s\\(in\\slbs\\):\\sYou\\[\\d+\\]\\s\\+\\sEQ\\[(\\d+)\\]\\s=\\sTotal\\[\\d+\\],\\sCapacity\\[(\\d+)%\\]$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Character.Inventory",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^(Weight\\s\\(in\\slbs\\):)\\sYou\\[\\d+\\]\\s\\+\\sEQ\\[\\d+\\]\\s=\\sTotal\\[\\d+\\],\\sCapacity\\[\\d+%\\]$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Character.Skills",
+    "isActive": "no",
+    "multiline": "yes",
+    "multielineDelta": "1",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^\\sExp:\\s([\\w,]+)\\s*Next\\slevel:\\s([\\w,]+)\\s*Money:\\s([\\w,]+) gold$",
+        "type": "regex"
+      },
+      {
+        "pattern": "^-=-=-\\|\\s([\\w\\s]+)\\s\\|(?:-=)+-$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Character.Spells",
+    "isActive": "no",
+    "multiline": "yes",
+    "multielineDelta": "1",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^You are currently ([\\w\\s\\.]+)$",
+        "type": "regex"
+      },
+      {
+        "pattern": "^-=-=-\\|\\s([\\w\\s]+)\\s\\|(?:-=)+-$",
+        "type": "regex"
+      }
+    ]
+  }
+]

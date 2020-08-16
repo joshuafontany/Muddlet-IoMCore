@@ -1,0 +1,2 @@
+Character.ActiveSkill = ""
+Character.ActiveSpell = ""

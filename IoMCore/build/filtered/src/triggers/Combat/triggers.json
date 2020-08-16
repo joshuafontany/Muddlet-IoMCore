@@ -1,1 +1,59 @@
-[]
+[
+  {
+    "name": "Enemy_Death",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^([\\w\\s]+) falls to the ground DEAD!$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Undead_Death",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^Undead's corpse turns to dust.$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Retreat",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^You try to FLEE!$",
+        "type": "regex"
+      }
+    ]
+  }
+]

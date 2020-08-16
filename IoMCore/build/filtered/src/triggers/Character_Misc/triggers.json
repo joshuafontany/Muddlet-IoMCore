@@ -1,1 +1,25 @@
-[]
+[
+  {
+    "name": "Stop_Skill_or_Spell",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "You break your concentration.",
+        "type": "regex"
+      },
+      {
+        "pattern": "Your concentration is interrupted.",
+        "type": "regex"
+      }
+    ]
+  }
+]

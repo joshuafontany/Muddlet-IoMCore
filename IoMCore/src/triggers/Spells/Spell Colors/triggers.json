@@ -1,0 +1,40 @@
+[
+    {
+      "name": "Spell_Prepare",
+      "isActive": "yes",
+      "multiline": "no",
+      "multielineDelta": "0",
+      "matchall": "no",
+      "filter": "no",
+      "fireLength": "0",
+      "soundFile": "",
+      "highlight": "no",
+      "highlightFG": "#ff0000",
+      "highlightBG": "#ffff00",
+      "patterns": [
+        {
+          "pattern": "^You begin to chant.",
+          "type": "regex"
+        }
+      ]
+    },
+    {
+        "name": "Spell_Ready",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^You finish the chant.",
+            "type": "regex"
+          }
+        ]
+      }
+  ]

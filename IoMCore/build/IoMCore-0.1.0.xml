@@ -511,8 +511,106 @@ sys = sys or {};</script>
 </eventHandlerList>
 </Script>
       <Script isActive="yes" isFolder="no">
-  <name>sys.init.lua</name>
-        <script/>
+  <name>sys.init</name>
+        <script>--json.encode(table, {indent = ##})
+--json.decod(string)
+
+if not json then
+	cecho("&lt;green&gt;json&lt;DimGrey&gt;:&lt;white&gt; Loading modules...\n")
+
+	local path = package.path
+	local homeDirectory = getMudletHomeDir():gsub("\\", "/")
+	
+	local luaDirectory = string.format("%s/%s", homeDirectory, [[IoMCore/libraries/?.lua]])
+	local initDirectory = string.format("%s/%s", homeDirectory, [[IoMCore/libraries/?/init.lua]])
+	package.path = string.format("%s;%s;%s", luaDirectory, initDirectory, path)
+
+	local okay, content = pcall(require, "json")
+	package.path = path
+
+	if okay then
+		json = content
+	else
+		cecho(string.format("&lt;firebrick&gt;json&lt;DimGrey&gt;:&lt;white&gt;  Error loading module: %s.\n", content))
+	end
+
+	if json then
+		cecho("&lt;green&gt;json&lt;DimGrey&gt;:&lt;white&gt; Modules successfully loaded.\n")
+		tempTimer( 1, function () raiseEvent( "jsonLoadEvent" ) end )
+	end
+end
+
+
+function sys.echo(stuff)
+  stuff = stuff or ""
+  moveCursorEnd("main") if getCurrentLine() ~= "" then echo"\n" end
+  cecho("&lt;DimGrey&gt;(&lt;slate_grey&gt;sys&lt;DimGrey&gt;)&lt;DimGrey&gt;:&lt;white&gt; " .. tostring(stuff))
+  echo("\n")
+end -- function
+
+function sys.save(n, t)
+	if string.find(getMudletHomeDir(), "/") then _sep = "/" else  _sep = "\\" end
+	local f = getMudletHomeDir() .. _sep .. "IoMCore" .. _sep .. "data" .. _sep .. n .. ".json"
+	--table.save(f, t)
+	--if io.exists(f) then
+  	local str = json.encode (t, { indent = 2 })
+  	local file,err = io.open(f, "w")
+    if file and err == nil then
+        file:write(str)
+        file:close()
+				cecho("&lt;green&gt;saved&lt;DimGrey&gt;:&lt;white&gt; " .. f.."\n")
+				return true
+    else
+        cecho("&lt;firebrick&gt;save failed&lt;DimGrey&gt;:&lt;white&gt; "..err.."\n")
+				return false
+    end
+	--end
+end -- function
+
+function sys.load(n, t)
+	if string.find(getMudletHomeDir(), "/") then _sep = "/" else  _sep = "\\" end
+	local f = getMudletHomeDir() .. _sep .. "IoMCore" .. _sep .. "data" .. _sep .. n .. ".json"
+	if io.exists(f) then
+		--table.load(f, t)
+		local file = io.open(f)
+    local s = file:read("*a")
+    file:close()
+		local obj, pos, err = json.decode (s, 1, nil)
+    if err then
+      cecho ("&lt;firebrick&gt;Error&lt;DimGrey&gt;:&lt;white&gt; ".. err.."\n")
+			return nil
+    else
+		 cecho("&lt;green&gt;loaded&lt;DimGrey&gt;:&lt;white&gt; " .. f.."\n")
+		 --display(t)
+		 return obj
+    end
+	else
+		sys.echo("&lt;firebrick&gt;load failed&lt;DimGrey&gt;:&lt;white&gt; " .. f .. " does not exist.\n")
+		return false
+	end -- if
+end -- function
+
+function sys.init(event)
+	if event == "sysLoadEvent" then
+		initGUI()
+	elseif event == "sysExitEvent" then
+		local characterSaved = sys.table(Character.Name..".Character", Character, "Save")
+		local partySaved = sys.table(Character.Name..".Party", Party, "Save")
+		local hotkeysSaved = sys.table(Character.Name..".Hotkeys", Hotkeys, "Save")
+		if characterSaved and partySaved and hotkeysSaved then
+			cecho("&lt;green&gt;exit&lt;DimGrey&gt;:&lt;white&gt; SAVE SUCCESSFUL!\n")
+		end
+	end
+end -- function
+
+function sys.table(loc, table, event)
+	if event == "Load" then
+		local result = sys.load(loc, table)
+  	return result
+	elseif event == "Save" then
+		return sys.save(loc, table)
+	end
+end</script>
   <packageName/>
 <eventHandlerList>
 <string>sysExitEvent</string>
@@ -3762,6 +3860,48 @@ end</script>
 </regexCodeList>
       <regexCodePropertyList>
 </regexCodePropertyList>
+      <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Coldwells_Strawberry_Patch</name>
+        <script/>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path/>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+</regexCodeList>
+        <regexCodePropertyList>
+</regexCodePropertyList>
+        <Trigger isActive="yes" isFolder="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Pick_Strawberry</name>
+          <script>send("pick a strawberry")</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Area_Specific\Coldwells_Strawberry_Patch</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^$</string>
+<string>^A ripe strawberry is just waiting to be picked$</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+</TriggerGroup>
 </TriggerGroup>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Character_Misc</name>
@@ -3781,6 +3921,30 @@ end</script>
 </regexCodeList>
       <regexCodePropertyList>
 </regexCodePropertyList>
+      <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Stop_Skill_or_Spell</name>
+        <script>Character.ActiveSkill = ""
+Character.ActiveSpell = ""</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Misc</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>You break your concentration.</string>
+<string>Your concentration is interrupted.</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
 </TriggerGroup>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Character_Status</name>
@@ -3800,6 +3964,384 @@ end</script>
 </regexCodeList>
       <regexCodePropertyList>
 </regexCodePropertyList>
+      <Trigger isActive="no" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Mute_Mud_Data</name>
+        <script>selectCurrentLine()
+copy()
+--appendBuffer("ChatCustomConsole")
+deleteLine()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>return true</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>4</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>doLogin</name>
+        <script>loginText = "do "
+    if Character.RDMPStatus == "ON" then
+        loginText = loginText .. "RDMP ON ".. Character.RDMPCode ..";"
+        enableTrigger("RDMP Zero")
+        enableTrigger("RDMP")
+    elseif Character.RDMPStatus == "OFF" then
+        disableTrigger("RDMP Zero")
+        disableTrigger("RDMP")
+    end
+    loginText = loginText .. "verbose on;"
+    if matches[1] ~= "A dark, sucking portal appears. You fall from it!" then
+        loginText = loginText .. "remove all;"
+    end
+    loginText = loginText .. "x myself;stats;score"
+    --enableTrigger("Mute Mud Data")
+    enableTrigger("loginData")
+    enableTrigger("Character.Score")
+    send(loginText)</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^You enter Islands of Myth.(?:Welcome to Islands of Myth!)?$</string>
+<string>^A dark, sucking portal appears. You fall from it!$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="no" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>loginData</name>
+        <script/>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^Verbose mode is now on.$</string>
+<string>^(?:=-){5,}$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Character.Score</name>
+        <script>if table.contains(GUI.Mute, "Character.Score") then
+	selectCurrentLine()
+  deleteLine()
+end</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^,-+.$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="no" isFolder="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Character.Stats</name>
+        <script>if multimatches[2][1] then
+	local statArray = string.split(string.trim(multimatches[2][1]), "   ")
+	for index = 1, #statArray do
+		local item = statArray[index]
+		local itemArray = string.split(item, ": ")
+		--echo("Stat: "..itemArray[1].." Value: "..itemArray[2].."\n")
+		local name = itemArray[1]
+		local value = tonumber(string.format("%i", itemArray[2]))
+		Character.Stats[name].Current = value
+	end
+	render_console("CharacterConsole", content_body["CharacterConsole"])
+end
+disableTrigger("Character.Stats")</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^Stats:$</string>
+<string>^\sStr:\s\d+\s+Dex:\s\d+\s+Con:\s\d+\s+Sta:\s\d+\s+Int:\s\d+\s+Wis:\s\d+\s+Cha:\s\d+$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="no" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Character.ResetStats</name>
+        <script>if multimatches[2][1] then
+	local statArray = string.split(string.trim(multimatches[2][1]), "   ")
+	for index = 1, #statArray do
+		local item = statArray[index]
+		local itemArray = string.split(item, ": ")
+		--echo("Stat: "..itemArray[1].." Value: "..itemArray[2].."\n")
+		local name = itemArray[1]
+		local value = tonumber(string.format("%i", itemArray[2]))
+		Character.Stats[name].Current = value
+		Character.Stats[name].Base = value
+	end
+	render_console("CharacterConsole", content_body["CharacterConsole"])
+end
+disableTrigger("Character.ResetStats")</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^Stats:$</string>
+<string>^\sStr:\s\d+\s+Dex:\s\d+\s+Con:\s\d+\s+Sta:\s\d+\s+Int:\s\d+\s+Wis:\s\d+\s+Cha:\s\d+$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="no" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Character.Exp</name>
+        <script>if matches[2] and matches[3] and matches[4] then
+	Character.Exp.Current = tonumber(string.format("%0f", string.gsub(matches[2],",", "")))
+	Character.Exp.NextAdvLevel = tonumber(string.format("%0f", string.gsub(matches[3],",", "")))
+	Character.Gold.Current = tonumber(string.format("%0f", string.gsub(matches[4],",", "")))
+	render_console("CharacterConsole", content_body["CharacterConsole"])
+	render_progress()
+	if table.contains(GUI.Mute, "Character.Exp") then
+  	selectCurrentLine()
+  	deleteLine()
+	end
+	if table.contains(GUI.Mute, "Character.Exp") then
+    table.remove(GUI.Mute, table.index_of(GUI.Mute, "Character.Exp"))
+  end
+  disableTrigger("Character.Exp")
+end</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^\sExp:\s([\w,]+)\s*Next\slevel:\s([\w,]+)\s*Money:\s([\w,]+) gold$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="no" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Character.Align</name>
+        <script>if matches[2] then
+	if table.contains(GUI.Mute, "Character.Align") then
+  	selectCurrentLine()
+  	deleteLine()
+    table.remove(GUI.Mute, table.index_of(GUI.Mute, "Character.Align"))
+  end
+  disableTrigger("Character.Align")
+end</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^You are currently ([\w\s\.]+)$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="yes" isFolder="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Character.Eq</name>
+        <script>enableTrigger("Eq Header")
+</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^\s{3}-+\s{3}$</string>
+<string>^\s{3}\|\s+([\w\s()]+?)?\s{2,}\|\s{3}$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Character.InventoryCapacity</name>
+        <script>if matches[2] and matches[3] then
+	Character.InventoryWeight = tonumber(matches[2])
+	Character.InventoryCapacity = tonumber(matches[3])
+end</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^Weight\s\(in\slbs\):\sYou\[\d+\]\s\+\sEQ\[(\d+)\]\s=\sTotal\[\d+\],\sCapacity\[(\d+)%\]$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Character.Inventory</name>
+        <script>if matches[2] =="Weight (in lbs):" then
+	if table.contains(GUI.Mute, "Character.Inventory") then
+		selectCurrentLine()
+    deleteLine()
+  end
+	Character.Inventory = {}
+	GUI.InvSection = ""
+end</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^(Weight\s\(in\slbs\):)\sYou\[\d+\]\s\+\sEQ\[\d+\]\s=\sTotal\[\d+\],\sCapacity\[\d+%\]$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="no" isFolder="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Character.Skills</name>
+        <script>-- Only triggers if preceeded by 'exp' command.
+-- This is to differentiate skills from spells (preceeded by 'align').
+enableTrigger("Skills Guild Header")
+enableTrigger("Skills Line")
+enableTrigger("Skills End")
+enableTrigger("Skills End Test")</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^\sExp:\s([\w,]+)\s*Next\slevel:\s([\w,]+)\s*Money:\s([\w,]+) gold$</string>
+<string>^-=-=-\|\s([\w\s]+)\s\|(?:-=)+-$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="no" isFolder="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Character.Spells</name>
+        <script>-- Only triggers if preceeded by 'align' command.
+-- This is to differentiate skills from skills (preceeded by 'exp').
+
+enableTrigger("Spells Guild Header")
+enableTrigger("Spells Line")
+enableTrigger("Spells End")
+enableTrigger("Spells End Test")</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Character_Status</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^You are currently ([\w\s\.]+)$</string>
+<string>^-=-=-\|\s([\w\s]+)\s\|(?:-=)+-$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
 </TriggerGroup>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Combat</name>
@@ -3819,6 +4361,273 @@ end</script>
 </regexCodeList>
       <regexCodePropertyList>
 </regexCodePropertyList>
+      <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Combat Colors</name>
+        <script/>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path/>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+</regexCodeList>
+        <regexCodePropertyList>
+</regexCodePropertyList>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Critical_Hit_Color</name>
+          <script>selectString(matches[1], 1)
+fg(GUI.colors.combat_crit)
+resetFormat()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Combat\Combat Colors</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^You score a CRITICAL hit!$</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Critical_Enemy_Hit_Color</name>
+          <script>selectString(matches[1], 1)
+fg(GUI.colors.combat_enemycrit)
+resetFormat()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Combat\Combat Colors</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^(?:.+) scores a CRITICAL hit!$</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Done_Looting_Color</name>
+          <script>selectCurrentLine()
+fg("sky_blue")
+deselect()
+resetFormat()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Combat\Combat Colors</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^Done. You looted (\d+) corpse(?:s)?.$</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>It_Stuns_You_Color</name>
+          <script>selectCurrentLine()
+fg("orange_red")
+deselect()
+resetFormat()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Combat\Combat Colors</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^(?:[\w\s\.]+) stuns you with the force of its attack!$</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+</TriggerGroup>
+      <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Specials</name>
+        <script/>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path/>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+</regexCodeList>
+        <regexCodePropertyList>
+</regexCodePropertyList>
+        <Trigger isActive="yes" isFolder="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>It_Stuns_You</name>
+          <script>if Character.ActiveSkill and Character.ActiveSkill ~= "" then
+	cecho("\n&lt;sky_blue&gt;Retrying "..Character.ActiveSkill"...&lt;reset&gt;\n")
+	useSkill(Character.ActiveSkill)
+elseif Character.ActiveSkpell and Character.ActiveSpell ~= "" then
+	cecho("\n&lt;sky_blue&gt;Recasting "..Character.ActiveSpell"...&lt;reset&gt;\n")
+	castSpell(Character.ActiveSpell)
+end</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Combat\Specials</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^(?:[\w\s\.]+) stuns you with the force of its attack!$</string>
+<string>^You break your concentration.$</string>
+<string>^Your concentration is interrupted.$</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+</TriggerGroup>
+      <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Enemy_Death</name>
+        <script>local cmd = "do"
+    if Character.ActiveSkill ~= "" and Character.ActiveSkill ~= nil then
+        Character.ActiveSkill = ""
+        cmd = cmd.." use stop;"
+    elseif Character.ActiveSpell ~= "" and Character.ActiveSpell ~= nil then
+        Character.ActiveSpell = ""
+        cmd = cmd.." cast stop;"
+    end
+    if Character.Loot == true then
+        if Character.EatCorpses == true then
+            cmd = cmd.." loot; eat first corpse;"
+        elseif Character.DigGrave == true then
+            cmd = cmd.." loot; dig grave;"
+        end
+    elseif Character.EatCorpses == true then
+        cmd = cmd.." eat first corpse;"
+    elseif Character.DigGrave == true then
+        cmd = cmd.." dig grave;"
+    end
+    --display(GUI.Mute)
+    enableTrigger("Character.Exp")
+    if table.contains(GUI.Mute, "Character.Exp") == false then table.insert(GUI.Mute, "Character.Exp") end
+    if table.contains(GUI.Mute, "Character.Inventory") == false then table.insert(GUI.Mute, "Character.Inventory") end
+    cmd = cmd.." exp; i;"
+    cecho("\n&lt;sky_blue&gt;Looting...&lt;reset&gt;")
+    send(cmd, GUI.Debug)
+    flashButtonBox("BoxEnemy", 0.25, 0.5)</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Combat</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^([\w\s]+) falls to the ground DEAD!$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Undead_Death</name>
+        <script>if Character.Loot == true then
+	send("get all", true)
+end</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Combat</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^Undead's corpse turns to dust.$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Retreat</name>
+        <script>local cmd = "do"
+if Character.ActiveSkill ~= "" and Character.ActiveSkill ~= nil then
+    Character.ActiveSkill = ""
+    cmd = cmd.." use stop;"
+elseif Character.ActiveSpell ~= "" and Character.ActiveSpell ~= nil then
+    Character.ActiveSpell = ""
+    cmd = cmd.." cast stop;"
+end
+if cmd ~= "do" then
+    send(cmd)
+end
+flashButtonBox("BoxEnemy", 0.5, 1)
+tempTimer( 2, function () flashButtonBox("BoxEnemy", 0.5, 1) end )
+tempTimer( 4, function () GUI.resetEnemy() end )</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Combat</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^You try to FLEE!$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
 </TriggerGroup>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Equipment</name>
@@ -3838,6 +4647,51 @@ end</script>
 </regexCodeList>
       <regexCodePropertyList>
 </regexCodePropertyList>
+      <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Race_Leader_Eq</name>
+        <script/>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path/>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+</regexCodeList>
+        <regexCodePropertyList>
+</regexCodePropertyList>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Lizardman</name>
+          <script>send("wear tailspike")
+enableTrigger("Character.Score")
+if table.contains(GUI.Mute, "Character.Score") == false then
+	table.insert(GUI.Mute, "Character.Score")
+end
+send("score", false)</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Equipment\Race_Leader_Eq</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^Rawknrhol noticing your power and having deemed you worthy(.*)$</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+</TriggerGroup>
 </TriggerGroup>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Event_Specific</name>
@@ -3857,6 +4711,30 @@ end</script>
 </regexCodeList>
       <regexCodePropertyList>
 </regexCodePropertyList>
+      <Trigger isActive="yes" isFolder="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Undead_Reanimation</name>
+        <script>Character.Target = string.lower(multimatches[1][2])
+send("attack "..Character.Selector.." "..Character.Target, true)</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Event_Specific</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^.*causes ([\w\s]+) to reanimate!$</string>
+<string>^([\w\s]+) cackles as it attacks you.$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
 </TriggerGroup>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Nav</name>
@@ -3895,6 +4773,27 @@ end</script>
 </regexCodeList>
       <regexCodePropertyList>
 </regexCodePropertyList>
+      <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Party_Target</name>
+        <script>target = matches[2]</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Party</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^Zethyr [wangotango]: Target:(.*)</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
 </TriggerGroup>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>RDMP</name>
@@ -3914,6 +4813,65 @@ end</script>
 </regexCodeList>
       <regexCodePropertyList>
 </regexCodePropertyList>
+      <Trigger isActive="yes" isFolder="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>RDMP_Zero</name>
+        <script>--echo("True")
+deleteLine()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>RDMP</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>return isPrompt()</string>
+<string>^$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>4</integer>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
+      <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>RDMP</name>
+        <script>if matches[2] then
+    test = string.starts(matches[2], Character.RDMPCode.."")
+    --if (test) then echo("True") else echo ("False") end
+    if(test) then
+        if table.contains(GUI.CustomChannels, "RDMP") then
+            selectString("RDMP "..Character.RDMPCode.." ", 1)
+            replace("")
+          selectCurrentLine()
+          copy()
+          appendBuffer("ChatCustomConsole")
+        end
+        doRDMP(matches[2])
+        deleteLine()
+    end
+  end</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>RDMP</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^RDMP (.*)$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
 </TriggerGroup>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Shops</name>
@@ -3933,6 +4891,36 @@ end</script>
 </regexCodeList>
       <regexCodePropertyList>
 </regexCodePropertyList>
+      <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Items_Sold</name>
+        <script>if table.contains(GUI.Mute, "Character.Exp") == false then
+    table.insert(GUI.Mute, "Character.Exp")
+  end
+  enableTrigger("Character.Exp")
+  send("exp", false)
+  render_progress()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Shops</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+<string>^You sold (?:[\d,]+) items for (?:[\d,]+) gold.$</string>
+<string>^You sold (?:.+) for (?:[\d,]+) gold.$</string>
+<string>^\[[^\]]+\]: You receive \d+ gold.$</string>
+        </regexCodeList>
+        <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+<integer>1</integer>
+        </regexCodePropertyList>
+</Trigger>
 </TriggerGroup>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Skills</name>
@@ -3952,6 +4940,71 @@ end</script>
 </regexCodeList>
       <regexCodePropertyList>
 </regexCodePropertyList>
+      <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Skill Colors</name>
+        <script/>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path/>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+</regexCodeList>
+        <regexCodePropertyList>
+</regexCodePropertyList>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Skill_Prepare</name>
+          <script>selectString(matches[1], 1)
+fg(GUI.colors.skill_start)
+resetFormat()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Skills\Skill Colors</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^You prepare yourself to use a skill.</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Skill_Ready</name>
+          <script>selectString(matches[1], 1)
+fg(GUI.colors.skill_ready)
+resetFormat()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Skills\Skill Colors</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^You are ready to perform your skill.</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+</TriggerGroup>
 </TriggerGroup>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Spells</name>
@@ -3971,6 +5024,71 @@ end</script>
 </regexCodeList>
       <regexCodePropertyList>
 </regexCodePropertyList>
+      <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Spell Colors</name>
+        <script/>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path/>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+        <regexCodeList>
+</regexCodeList>
+        <regexCodePropertyList>
+</regexCodePropertyList>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Spell_Prepare</name>
+          <script>selectString(matches[1], 1)
+fg(GUI.colors.skill_start)
+resetFormat()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Spells\Spell Colors</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^You begin to chant.</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Spell_Ready</name>
+          <script>selectString(matches[1], 1)
+fg(GUI.colors.skill_ready)
+resetFormat()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>Spells\Spell Colors</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^You finish the chant.</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+</TriggerGroup>
 </TriggerGroup>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>_UI</name>
@@ -4177,6 +5295,78 @@ end</script>
 </regexCodeList>
         <regexCodePropertyList>
 </regexCodePropertyList>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Full_Health</name>
+          <script>selectString(matches[1], 1)
+fg(GUI.colors.bonus)
+resetFormat()
+flashButtonBox("BoxHealth", 0.25, 0.5)</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>_UI\Footer</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^You feel fully healed.$</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Full_Spell</name>
+          <script>selectString(matches[1], 1)
+fg(GUI.colors.bonus)
+resetFormat()
+flashButtonBox("BoxSpell", 0.25, 0.5)</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>_UI\Footer</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^Your body glows with magical energy.$</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Full_Endurance</name>
+          <script>selectString(matches[1], 1)
+fg(GUI.colors.bonus)
+resetFormat()
+flashButtonBox("BoxEndurance", 0.25, 0.5)</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>_UI\Footer</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^You feel fully refreshed.$</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
 </TriggerGroup>
       <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Mutes</name>
@@ -4196,6 +5386,51 @@ end</script>
 </regexCodeList>
         <regexCodePropertyList>
 </regexCodePropertyList>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Updating_Terminal_Info</name>
+          <script>deleteLine()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>_UI\Mutes</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>Updating Terminal info.. Rows: .* Columns: .*</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Suppress_Prompt</name>
+          <script>--display(GUI.Mute)
+selectCurrentLine()
+deleteLine()
+disableTrigger("Suppress Prompt")</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>_UI\Mutes</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>return isPrompt()</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>4</integer>
+          </regexCodePropertyList>
+</Trigger>
 </TriggerGroup>
       <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Tabs</name>
@@ -4215,6 +5450,100 @@ end</script>
 </regexCodeList>
         <regexCodePropertyList>
 </regexCodePropertyList>
+        <Trigger isActive="yes" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Pause_Tab_Refreshes</name>
+          <script>if GUI.TabRefresh == true then
+    cecho("&lt;sky_blue&gt;Pausing tab refresh...&lt;reset&gt;\n")
+    killAllTabTimers()
+    enableTrigger("Resume Tab Refresh")
+    disableTrigger("Pause Tab Refresh")
+    GUI.TabRefresh = false
+  end</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>_UI\Tabs</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^Help topic\? \[\?\]:\s*$</string>
+<string>^--More--\(\d+%\) \[\?\]:\s*$</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+<integer>1</integer>
+          </regexCodePropertyList>
+</Trigger>
+        <Trigger isActive="no" isFolder="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
+  <name>Resume_Tab_Refresh</name>
+          <script>local refresh = false
+local npc_matches = {
+	"Sisong says",
+}
+
+local prompt_matches = {
+	"^Help topic%\?",
+	"^%[[%w%d%\?]+%]",
+	"^%[(%d+) of (%d+)%] mail:",
+	"^Please answer Y for yes or N for no:",
+	"How much%\? "
+}
+
+if GUI.TabRefresh == false then
+  if table.contains(npc_matches, matches[2]) then
+  	--echo ("npc?")
+  	refresh = true
+  elseif isPrompt() then
+  	--echo ("prompt?")
+		selectCurrentLine()
+		local prompt = getSelection()
+		--display(prompt)
+		for i = 1, #prompt_matches do
+			local test = prompt_matches[i]
+			--display(string.match(prompt, test))
+			if string.match(prompt, test) ~= nil then
+				return false
+			end
+		end
+  	refresh = true
+  end
+  if refresh == true then
+  	GUI.TabRefresh = true
+    on_chat_box_press(GUI.CurrentChat)
+    on_content_box_press(GUI.CurrentContent)
+    on_menu_box_press(GUI.CurrentMenu)
+    disableTrigger("Resume Tab Refresh")
+    enableTrigger("Pause Tab Refresh")
+  	cecho("&lt;sky_blue&gt;Resuming tab refresh...&lt;reset&gt;\n")
+  end
+end
+deselect()
+moveCursorEnd()</script>
+  <triggerType>0</triggerType>
+  <conditonLineDelta>0</conditonLineDelta>
+  <mStayOpen>0</mStayOpen>
+  <mCommand/>
+  <packageName/>
+  <path>_UI\Tabs</path>
+  <mFgColor>#ff0000</mFgColor>
+  <mBgColor>#ffff00</mBgColor>
+  <mSoundFile/>
+  <colorTriggerFgColor>#000000</colorTriggerFgColor>
+  <colorTriggerBgColor>#000000</colorTriggerBgColor>
+          <regexCodeList>
+<string>^(Sisong says), "Well then, off ya go!.*$</string>
+<string>return isPrompt()</string>
+          </regexCodeList>
+          <regexCodePropertyList>
+<integer>1</integer>
+<integer>4</integer>
+          </regexCodePropertyList>
+</Trigger>
 </TriggerGroup>
 </TriggerGroup>
 </TriggerPackage>

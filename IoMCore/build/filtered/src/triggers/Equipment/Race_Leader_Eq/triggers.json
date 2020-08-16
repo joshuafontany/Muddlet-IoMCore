@@ -1,0 +1,21 @@
+[
+    {
+      "name": "Lizardman",
+      "isActive": "yes",
+      "multiline": "no",
+      "multielineDelta": "0",
+      "matchall": "no",
+      "filter": "no",
+      "fireLength": "0",
+      "soundFile": "",
+      "highlight": "no",
+      "highlightFG": "#ff0000",
+      "highlightBG": "#ffff00",
+      "patterns": [
+        {
+          "pattern": "^Rawknrhol noticing your power and having deemed you worthy(.*)$",
+          "type": "regex"
+        }
+      ]
+    }
+  ]

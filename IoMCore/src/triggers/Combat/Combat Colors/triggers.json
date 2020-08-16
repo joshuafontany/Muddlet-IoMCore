@@ -1,0 +1,78 @@
+[
+  {
+    "name": "Critical_Hit_Color",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^You score a CRITICAL hit!$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Critical_Enemy_Hit_Color",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^(?:.+) scores a CRITICAL hit!$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "Done_Looting_Color",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^Done. You looted (\\d+) corpse(?:s)?.$",
+        "type": "regex"
+      }
+    ]
+  },
+  {
+    "name": "It_Stuns_You_Color",
+    "isActive": "yes",
+    "multiline": "no",
+    "multielineDelta": "0",
+    "matchall": "no",
+    "filter": "no",
+    "fireLength": "0",
+    "soundFile": "",
+    "highlight": "no",
+    "highlightFG": "#ff0000",
+    "highlightBG": "#ffff00",
+    "patterns": [
+      {
+        "pattern": "^(?:[\\w\\s\\.]+) stuns you with the force of its attack!$",
+        "type": "regex"
+      }
+    ]
+  }
+]

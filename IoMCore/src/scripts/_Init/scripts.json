@@ -4,7 +4,7 @@
         "isActive": "yes"
     },
     {
-        "name": "sys.init.lua",
+        "name": "sys.init",
         "isActive": "yes",
         "eventHandlerList": [
             "sysExitEvent",
