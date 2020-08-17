@@ -45,7 +45,7 @@ end
 
 function doTabRefresh(name)
   if GUI.TabRefresh == true then
-		enableTrigger("Suppress Prompt")
+		enableTrigger("Suppress_Prompt")
   	TabHandlers[name]()
 	end
 end

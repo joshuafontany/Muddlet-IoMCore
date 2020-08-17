@@ -1,1 +1,1 @@
-enableTrigger("Eq Header")
+enableTrigger("Eq_Header")

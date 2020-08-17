@@ -34,8 +34,8 @@ if GUI.TabRefresh == false then
     on_chat_box_press(GUI.CurrentChat)
     on_content_box_press(GUI.CurrentContent)
     on_menu_box_press(GUI.CurrentMenu)
-    disableTrigger("Resume Tab Refresh")
-    enableTrigger("Pause Tab Refresh")
+    disableTrigger("Resume_Tab_Refresh")
+    enableTrigger("Pause_Tab_Refresh")
   	cecho("<sky_blue>Resuming tab refresh...<reset>\n")
   end
 end

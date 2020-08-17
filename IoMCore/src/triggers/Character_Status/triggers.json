@@ -62,6 +62,92 @@
         "pattern": "^(?:=-){5,}$",
         "type": "regex"
       }
+    ],
+    "children": [
+      {
+        "name": "Login_Name_Data",
+        "isActive": "yes",
+        "multiline": "yes",
+        "multielineDelta": "2",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^(?:=-){5,}$",
+            "type": "regex"
+          },
+          {
+            "pattern": "^(\\w+)(?:\\s(\\w{1,11}))?\\sthe(?:\\s(\\w+)).*$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Login_Scars_Data",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^(?:H|Sh)e has (\\d+) scar(?:s)?.$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Login_Stats_Data",
+        "isActive": "yes",
+        "multiline": "yes",
+        "multielineDelta": "2",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^Stats:$",
+            "type": "regex"
+          },
+          {
+            "pattern": "^\\sStr:\\s\\d+\\s+Dex:\\s\\d+\\s+Con:\\s\\d+\\s+Sta:\\s\\d+\\s+Int:\\s\\d+\\s+Wis:\\s\\d+\\s+Cha:\\s\\d+$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Login_Prompt_Test",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "return isPrompt()",
+            "type": "lua"
+          }
+        ]
+      }
     ]
   },
   {
@@ -80,6 +166,88 @@
       {
         "pattern": "^,-+.$",
         "type": "regex"
+      }
+    ],
+    "children": [
+      {
+        "name": "Character.Score.Name_Data",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\s(\\w+)(?:\\s(\\w{1,11}))?\\sthe(?:\\s(\\w+))(?:\\s(\\w+))?(?:\\s*\\((\\w+)\\))?[^\\|]*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Levels",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\sLevel\\s*:\\s*(\\d+)\\s+Open\\sGuild\\sLevels\\s*:\\s*(\\d+)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Login_Stats_Data",
+        "isActive": "yes",
+        "multiline": "yes",
+        "multielineDelta": "2",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^Stats:$",
+            "type": "regex"
+          },
+          {
+            "pattern": "^\\sStr:\\s\\d+\\s+Dex:\\s\\d+\\s+Con:\\s\\d+\\s+Sta:\\s\\d+\\s+Int:\\s\\d+\\s+Wis:\\s\\d+\\s+Cha:\\s\\d+$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Login_Prompt_Test",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "return isPrompt()",
+            "type": "lua"
+          }
+        ]
       }
     ]
   },

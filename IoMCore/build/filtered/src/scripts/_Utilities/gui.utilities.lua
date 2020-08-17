@@ -8,7 +8,7 @@ function disable_tooltip(message)
 end
 
 function set_icon(iconName, iconCSS, section_icon, tooltip_value)
-  iconURL = 'url("'..getMudletHomeDir():gsub("\\","/")..'/IoMCore/images/static-icons/'..section_icon..'")'
+  iconURL = 'url("'..resourceDirectory..'/images/static-icons/'..section_icon..'")'
  	GUI[iconCSS]:set("border-image", iconURL)
   GUI[iconName]:setStyleSheet(GUI[iconCSS]:getCSS())
   GUI[iconCSS]:set("border-image", "")

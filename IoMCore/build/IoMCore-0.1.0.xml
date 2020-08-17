@@ -518,24 +518,31 @@ sys = sys or {};</script>
 if not json then
 	cecho("&lt;green&gt;json&lt;DimGrey&gt;:&lt;white&gt; Loading modules...\n")
 
-	local path = package.path
-	local homeDirectory = getMudletHomeDir():gsub("\\", "/")
+	local resourcesURL = ""
+	homeDirectory = getMudletHomeDir():gsub("\\", "/")
+	local homeDirectoryTable = homeDirectory:split("/profiles")
+	resourceDirectory = string.format("%s/%s", homeDirectoryTable[1], [[resources/IoMCore]])
 	
-	local luaDirectory = string.format("%s/%s", homeDirectory, [[IoMCore/libraries/?.lua]])
-	local initDirectory = string.format("%s/%s", homeDirectory, [[IoMCore/libraries/?/init.lua]])
-	package.path = string.format("%s;%s;%s", luaDirectory, initDirectory, path)
+	local fileInfo = lfs.attributes(resourceDirectory)
+	if fileInfo and fileInfo.mode == "directory" then
+		--display(fileInfo) -- to see the detailed information
+	else
+		echo("The Resource path is invalid (file/directory doesn't exist)...")
+		echo("Downloading Resources from: "..resourcesURL)
+	end
+
+	local path = package.path	
+	local luaDirectory = string.format("%s/%s", resourceDirectory, [[libraries/?.lua]])
+	package.path = string.format("%s;%s;%s", resourceDirectory, luaDirectory, path)
 
 	local okay, content = pcall(require, "json")
-	package.path = path
-
 	if okay then
 		json = content
 	else
 		cecho(string.format("&lt;firebrick&gt;json&lt;DimGrey&gt;:&lt;white&gt;  Error loading module: %s.\n", content))
 	end
-
 	if json then
-		cecho("&lt;green&gt;json&lt;DimGrey&gt;:&lt;white&gt; Modules successfully loaded.\n")
+		cecho("&lt;green&gt;json&lt;DimGrey&gt;:&lt;white&gt; Resources successfully loaded.\n")
 		tempTimer( 1, function () raiseEvent( "jsonLoadEvent" ) end )
 	end
 end
@@ -1126,74 +1133,68 @@ GUI.Lookup = GUI.Lookup or
 </eventHandlerList>
         <Script isActive="yes" isFolder="no">
   <name>Chat.init</name>
-          <script>-- Big thanks to Jamie W. (Delra) for putting the initial concept together. I just
--- took what they gave me and made it follow the Geyser patterns and used some lesser
--- known Geyser utilities to make it a bit more flexible.
+          <script>GUI.CustomChannels = GUI.CustomChannels or {
+	"RDMP"
+}
 
-demonnic = demonnic or {}
-demonnic.iGauge = demonnic.iGauge or Geyser.Container:new({
-  name = "demonnic.iGaugeClass",
-	value = 100,
-	fillcolor = 'firebrick', --default to a darkish red fill color
-	emptycolor = 'black', --default to a black background
-	bartype = 'bar', 
-	orientation = "horizontal" --only have horizontal but I wanna see if I can figure out vertical.
-})
-
-function demonnic.iGauge:oldsetType(bartype)
-  self.bartype = bartype
-	self.front:setStyleSheet([[
-	  border-image: url(]]..getMudletHomeDir()..'/igauges-1.0/'..self.bartype..[[.png);
-	]])
-end		
-
-function demonnic.iGauge:setType(bartype)
-  self.bartype = bartype
-	self.front:setStyleSheet([[
-	  border-image: url(]]..getMudletHomeDir()..'/images/alphas/'..self.bartype..[[.png);
-	]])
-end	
-		
-function demonnic.iGauge:update(value, foreGround, backGround)
-	value = (value &lt; 2 and value) or value/100
-	if foreGround then self.fillcolor = foreGround end
-	if backGround then self.emptycolor = backGround end
-	local fgr,fgg,fgb = Geyser.Color.parse(self.fillcolor)
-	local bgr,bgg,bgb = Geyser.Color.parse(self.emptycolor)
-	local fgc = table.concat({fgr, fgg, fgb}, ', ')
-	local bgc = table.concat({bgr, bgg, bgb}, ', ')
-	value = tonumber(value)
-	local valm = value-0.02
-	local valp = value+0.02
-	self.back:set('background-color', string.format('qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(%s,255), stop:%.2f rgba(%s, 255), stop:%.2f rgba(%s,255), stop:1 rgba(%s,255))', fgc, valm, fgc, valp, bgc, bgc))
-end
-
-demonnic.iGauge.parent = Geyser.Container
-
-function demonnic.iGauge:new(cons, container)
-	cons = cons or {}
-	cons.type = cons.type or "iGauge"
-	local me = self.parent:new(cons, container)
-	setmetatable(me, self)
-	self.__index = self
-		
-	me.back = Geyser.Label:new({
-		name = me.name ..'_back',
-		x = 0, y = 0,
-		width = '100%', 
-		height = '100%',
-	}, me)
-	me.front = Geyser.Label:new({
-		name = me.name ..'_front', 
-		x = 0, y = 0,
-		width = '100%', 
-		height = '100%',
-	}, me.back)  	
-	me:setType(me.bartype)
-	me:update(me.value, me.fillcolor, me.emptycolor)
-	return me
-end
-</script>
+GUI.Channels = GUI.Channels or {
+"abjurer",
+"admin",
+"alien",
+"arch",
+"archinfo",
+"arena",
+"auction",
+"auction2",
+"bard",
+"bounty",
+"build",
+"castles",
+"cebinfo",
+"chat",
+"clans",
+"death",
+"death_taunt",
+"debug",
+"druid",
+"elemental",
+"equip",
+"error",
+"event",
+"evoker",
+"fishing",
+"geek",
+"ghost",
+"inform",
+"iomchat",
+"login",
+"lurker",
+"martial_artist",
+"mdeath",
+"monitor",
+"mud_issues",
+"mudclients",
+"myth",
+"necromancer",
+"newbie",
+"obscene",
+"paladin",
+"parties",
+"plaque",
+"rep",
+"sales",
+"shapeshifter",
+"southcape",
+"summoner",
+"unraveller",
+"warrior",
+"weaver",
+"witch",
+"wiz",
+"wizinfo",
+"woodsman",
+"zombie"
+}</script>
   <packageName/>
 <eventHandlerList>
 </eventHandlerList>
@@ -1277,7 +1278,7 @@ end
 function demonnic.iGauge:setType(bartype)
   self.bartype = bartype
 	self.front:setStyleSheet([[
-	  border-image: url(]]..getMudletHomeDir()..'/images/alphas/'..self.bartype..[[.png);
+	  border-image: url(]]..resourceDirectory..'/images/alphas/'..self.bartype..[[.png);
 	]])
 end	
 		
@@ -1333,7 +1334,7 @@ end
 <eventHandlerList>
 </eventHandlerList>
         <ScriptGroup isActive="yes" isFolder="yes">
-  <name>Create_Right</name>
+  <name>Create_Right_Tabs</name>
           <script/>
   <packageName/>
 <eventHandlerList>
@@ -2618,7 +2619,9 @@ end</script>
 </Script>
         <Script isActive="yes" isFolder="no">
   <name>Create_Header</name>
-          <script>header_sections =
+          <script>-- Create_Header
+
+header_sections =
   {
     "Box0",
     "Box1",
@@ -2929,19 +2932,19 @@ function GUI.CreateFooter()
     name = "BoxRoom",
   },GUI.FooterBottom)
   GUI.BoxRoom:setStyleSheet(GUI.BoxFooterCSS:getCSS())
-  GUI.BoxRoom:echo("&lt;center&gt;&lt;font size=\""..(GUI.FontSize+2).."\"&gt;ðŸ“?&lt;/font&gt; &lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;Room&lt;/font&gt;&lt;/b&gt;")
+  GUI.BoxRoom:echo("&lt;center&gt;&lt;font size=\""..(GUI.FontSize+2).."\"&gt;&amp;#x1F4CD;&lt;/font&gt; &lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;Room&lt;/font&gt;&lt;/b&gt;")
   
   GUI.BoxArea = Geyser.Label:new({
     name = "BoxArea",
   },GUI.FooterBottom)
   GUI.BoxArea:setStyleSheet(GUI.BoxFooterCSS:getCSS())
-  GUI.BoxArea:echo("&lt;center&gt;&lt;font size=\""..(GUI.FontSize+2).."\"&gt;ðŸ?°&lt;/font&gt; &lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;Area&lt;/font&gt;&lt;/b&gt;")
+  GUI.BoxArea:echo("&lt;center&gt;&lt;font size=\""..(GUI.FontSize+2).."\"&gt;&amp;#x1F3F0;&lt;/font&gt; &lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;Area&lt;/font&gt;&lt;/b&gt;")
   
   GUI.BoxExits = Geyser.Label:new({
     name = "BoxExits",
   },GUI.FooterBottom)
   GUI.BoxExits:setStyleSheet(GUI.BoxFooterCSS:getCSS())
-  GUI.BoxExits:echo("&lt;center&gt;&lt;font size=\""..(GUI.FontSize+2).."\"&gt;ðŸšª&lt;/font&gt; &lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;Exits&lt;/font&gt;&lt;/b&gt;")
+  GUI.BoxExits:echo("&lt;center&gt;&lt;font size=\""..(GUI.FontSize+2).."\"&gt;&amp;#x1f6aa;&lt;/font&gt; &lt;b&gt;&lt;font size=\""..GUI.FontSize.."\"&gt;Exits&lt;/font&gt;&lt;/b&gt;")
 end
 
 function update_statusbars()
@@ -2953,6 +2956,55 @@ function update_statusbars()
 	GUI.SpBarLabel:echo("&lt;b&gt;"..Character.Sp.Current.."/"..Character.Sp.Max.."&lt;/b&gt;")
 	GUI.EpBarLabel:echo("&lt;b&gt;"..Character.Ep.Current.."/"..Character.Ep.Max.."&lt;/b&gt;")
 end</script>
+  <packageName/>
+<eventHandlerList>
+</eventHandlerList>
+</Script>
+        <Script isActive="yes" isFolder="no">
+  <name>Create_Right</name>
+          <script>function GUI.CreateRight()
+    GUI.BoxRightCSS = CSSMan.new([[
+      background-color: rgba(0,0,0,0);
+        qproperty-wordWrap: true;
+    ]])
+    
+    GUI.BoxCSS = CSSMan.new([[
+      background-color: rgba(0,0,0,0);
+      border-style: solid;
+      border-width: 1px;
+      border-radius: 5px;
+      border-color: white;
+      margin: 2px;
+    ]])
+      
+      GUI.ProgressLabelCSS = CSSMan.new([[
+      background-color: rgba(0,0,0,0);
+          color: rgbs(255,255,255,255)
+        qproperty-wordWrap: true;
+          qproperty-alignment: 'AlignTop | AlignLeft';
+          padding: 5px;
+    ]])
+      
+      GUI.MoneyLabelCSS = CSSMan.new([[
+      background-color: rgba(0,0,0,0);
+          color: rgbs(255,255,255,255)
+        qproperty-wordWrap: true;
+          qproperty-alignment: 'AlignLeft | AlignTop';
+          padding: 5px;
+    ]])
+      
+      GUI.MoneyBoxCSS = CSSMan.new([[
+      background-color: rgba(0,0,0,0);
+    ]])
+      
+      GUI.TooltipLabelCSS = CSSMan.new([[
+      background-color: rgba(0,0,0,0);
+        qproperty-wordWrap: true;
+          qproperty-alignment: 'AlignLeft | AlignTop';
+          padding: 5px;
+    ]])
+      
+  end</script>
   <packageName/>
 <eventHandlerList>
 </eventHandlerList>
@@ -3103,7 +3155,7 @@ end
 
 function doTabRefresh(name)
   if GUI.TabRefresh == true then
-		enableTrigger("Suppress Prompt")
+		enableTrigger("Suppress_Prompt")
   	TabHandlers[name]()
 	end
 end
@@ -3317,7 +3369,7 @@ function disable_tooltip(message)
 end
 
 function set_icon(iconName, iconCSS, section_icon, tooltip_value)
-  iconURL = 'url("'..getMudletHomeDir():gsub("\\","/")..'/IoMCore/images/static-icons/'..section_icon..'")'
+  iconURL = 'url("'..resourceDirectory..'/images/static-icons/'..section_icon..'")'
  	GUI[iconCSS]:set("border-image", iconURL)
   GUI[iconName]:setStyleSheet(GUI[iconCSS]:getCSS())
   GUI[iconCSS]:set("border-image", "")
@@ -3840,6 +3892,34 @@ end</script>
 </AliasGroup>
 </AliasPackage>
   <TimerPackage>
+    <TimerGroup isActive="yes" isFolder="yes" isTempTimer="no" isOffsetTimer="no">
+  <name>Combat</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <time>00:00:00:000</time>
+</TimerGroup>
+    <TimerGroup isActive="yes" isFolder="yes" isTempTimer="no" isOffsetTimer="no">
+  <name>Nav</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <time>00:00:00:000</time>
+</TimerGroup>
+    <TimerGroup isActive="yes" isFolder="yes" isTempTimer="no" isOffsetTimer="no">
+  <name>Skills</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <time>00:00:00:000</time>
+</TimerGroup>
+    <TimerGroup isActive="yes" isFolder="yes" isTempTimer="no" isOffsetTimer="no">
+  <name>Spells</name>
+      <script/>
+  <command/>
+  <packageName/>
+  <time>00:00:00:000</time>
+</TimerGroup>
 </TimerPackage>
   <TriggerPackage>
     <TriggerGroup isActive="yes" isFolder="yes" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
@@ -3993,10 +4073,10 @@ deleteLine()</script>
         <script>loginText = "do "
     if Character.RDMPStatus == "ON" then
         loginText = loginText .. "RDMP ON ".. Character.RDMPCode ..";"
-        enableTrigger("RDMP Zero")
+        enableTrigger("RDMP_Zero")
         enableTrigger("RDMP")
     elseif Character.RDMPStatus == "OFF" then
-        disableTrigger("RDMP Zero")
+        disableTrigger("RDMP_Zero")
         disableTrigger("RDMP")
     end
     loginText = loginText .. "verbose on;"
@@ -4211,7 +4291,7 @@ end</script>
 </Trigger>
       <Trigger isActive="yes" isFolder="no" isMultiline="yes" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isColorTrigger="" isColorTriggerFg="" isColorTriggerBg="">
   <name>Character.Eq</name>
-        <script>enableTrigger("Eq Header")
+        <script>enableTrigger("Eq_Header")
 </script>
   <triggerType>0</triggerType>
   <conditonLineDelta>0</conditonLineDelta>
@@ -4289,10 +4369,10 @@ end</script>
   <name>Character.Skills</name>
         <script>-- Only triggers if preceeded by 'exp' command.
 -- This is to differentiate skills from spells (preceeded by 'align').
-enableTrigger("Skills Guild Header")
-enableTrigger("Skills Line")
-enableTrigger("Skills End")
-enableTrigger("Skills End Test")</script>
+enableTrigger("Skills_Guild_Header")
+enableTrigger("Skills_Line")
+enableTrigger("Skills_End")
+enableTrigger("Skills_End_Test")</script>
   <triggerType>0</triggerType>
   <conditonLineDelta>0</conditonLineDelta>
   <mStayOpen>0</mStayOpen>
@@ -4318,10 +4398,10 @@ enableTrigger("Skills End Test")</script>
         <script>-- Only triggers if preceeded by 'align' command.
 -- This is to differentiate skills from skills (preceeded by 'exp').
 
-enableTrigger("Spells Guild Header")
-enableTrigger("Spells Line")
-enableTrigger("Spells End")
-enableTrigger("Spells End Test")</script>
+enableTrigger("Spells_Guild_Header")
+enableTrigger("Spells_Line")
+enableTrigger("Spells_End")
+enableTrigger("Spells_End_Test")</script>
   <triggerType>0</triggerType>
   <conditonLineDelta>0</conditonLineDelta>
   <mStayOpen>0</mStayOpen>
@@ -5228,7 +5308,7 @@ end</script>
 --cecho("&lt;sky_blue&gt;Pausing chat capture...&lt;reset&gt;")
 if GUI.CaptureChat == true then
 	GUI.CaptureChat = false
-	enableTrigger("Resume Chat Capture")
+	enableTrigger("Resume_Chat_Capture")
 end</script>
   <triggerType>0</triggerType>
   <conditonLineDelta>0</conditonLineDelta>
@@ -5256,7 +5336,7 @@ end</script>
 --cecho("&lt;sky_blue&gt;Resuming chat capture...&lt;reset&gt;")
 if GUI.CaptureChat == false then
 	GUI.CaptureChat = true
-	disableTrigger("Resume Chat Capture")
+	disableTrigger("Resume_Chat_Capture")
 end</script>
   <triggerType>0</triggerType>
   <conditonLineDelta>0</conditonLineDelta>
@@ -5412,7 +5492,7 @@ flashButtonBox("BoxEndurance", 0.25, 0.5)</script>
           <script>--display(GUI.Mute)
 selectCurrentLine()
 deleteLine()
-disableTrigger("Suppress Prompt")</script>
+disableTrigger("Suppress_Prompt")</script>
   <triggerType>0</triggerType>
   <conditonLineDelta>0</conditonLineDelta>
   <mStayOpen>0</mStayOpen>
@@ -5455,8 +5535,8 @@ disableTrigger("Suppress Prompt")</script>
           <script>if GUI.TabRefresh == true then
     cecho("&lt;sky_blue&gt;Pausing tab refresh...&lt;reset&gt;\n")
     killAllTabTimers()
-    enableTrigger("Resume Tab Refresh")
-    disableTrigger("Pause Tab Refresh")
+    enableTrigger("Resume_Tab_Refresh")
+    disableTrigger("Pause_Tab_Refresh")
     GUI.TabRefresh = false
   end</script>
   <triggerType>0</triggerType>
@@ -5517,8 +5597,8 @@ if GUI.TabRefresh == false then
     on_chat_box_press(GUI.CurrentChat)
     on_content_box_press(GUI.CurrentContent)
     on_menu_box_press(GUI.CurrentMenu)
-    disableTrigger("Resume Tab Refresh")
-    enableTrigger("Pause Tab Refresh")
+    disableTrigger("Resume_Tab_Refresh")
+    enableTrigger("Pause_Tab_Refresh")
   	cecho("&lt;sky_blue&gt;Resuming tab refresh...&lt;reset&gt;\n")
   end
 end

@@ -4,5 +4,5 @@
 --cecho("<sky_blue>Resuming chat capture...<reset>")
 if GUI.CaptureChat == false then
 	GUI.CaptureChat = true
-	disableTrigger("Resume Chat Capture")
+	disableTrigger("Resume_Chat_Capture")
 end

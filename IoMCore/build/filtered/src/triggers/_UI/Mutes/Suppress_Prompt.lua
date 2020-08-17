@@ -1,4 +1,4 @@
 --display(GUI.Mute)
 selectCurrentLine()
 deleteLine()
-disableTrigger("Suppress Prompt")
+disableTrigger("Suppress_Prompt")

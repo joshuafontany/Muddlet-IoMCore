@@ -3,6 +3,261 @@
 <MudletPackage version="1.001">
 	<ScriptPackage>
 		<ScriptGroup isActive="yes" isFolder="yes">
+			<name>Hotkeys</name>
+			<packageName></packageName>
+			<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+</script>
+			<eventHandlerList />
+			<Script isActive="yes" isFolder="no">
+				<name>doHotkey</name>
+				<packageName></packageName>
+				<script>Hotkeys = Hotkeys or {
+	[1] = {1, "sw", {}},
+	[2] = {2, "sb", {"myself"}},
+	[3] = {3, "dance", {}},
+	
+}
+
+HotKey0 = {3, "cast stop", {}}
+
+function doHotkey(index)
+	echo("Hotkey "..index)
+  if index == 0 then
+  	local func = Hotkey0[1]
+  	local cmd = Hotkey0[2]
+  	local args = Hotkey0[3]
+		hotkey_functions[func](cmd, args)
+  else
+  	local func = Hotkeys[index][1]
+  	local cmd = Hotkeys[index][2]
+  	local args = Hotkeys[index][3]
+		hotkey_functions[func](cmd, args)
+	end
+end
+
+hotkey_functions={
+	[1] = function(cmd, args) castSpell(spellAlias(cmd), args) end,
+	[2] = function(cmd, args) useSkill(skillAlias(cmd), args) end,
+	[3] = function(cmd, args) send(cmd) end,
+
+}</script>
+				<eventHandlerList />
+			</Script>
+		</ScriptGroup>
+		<ScriptGroup isActive="yes" isFolder="yes">
+			<name>Nav</name>
+			<packageName></packageName>
+			<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+</script>
+			<eventHandlerList />
+			<Script isActive="yes" isFolder="no">
+				<name>Mapping Helper by JorMox</name>
+				<packageName></packageName>
+				<script>mapAddOns = mapAddOns or {}
+
+local function safeDelete(ids)
+    for _, id in ipairs(ids) do
+        id = tonumber(id)
+        local rooms = {}
+        for _, room in ipairs(getAllRoomEntrances(id)) do
+            for dir, exit in pairs(getRoomExits(room)) do
+                if exit == id then
+                    if rooms[room] then
+                        if type(rooms[room]) == "table" then
+                            table.insert(rooms[room],dir)
+                        else
+                            rooms[room] = {rooms[room], dir}
+                        end
+                    else
+                        rooms[room] = dir
+                    end
+                end
+            end
+        end
+        deleteRoom(id)
+        for rid, dirs in pairs(rooms) do
+            if type(dirs) == "table" then
+                for _, dir in ipairs(dirs) do
+                    setExitStub(rid, dir, true)
+                end
+            else
+                setExitStub(rid, dirs, true)
+            end
+        end
+    end
+    updateMap()
+end
+
+local keys = {['1'] = 'sw', ['2'] = 's', ['3'] = 'se', ['4'] = 'w', ['5'] = 'done', ['6'] = 'e', ['7'] = 'nw',
+    ['8'] = 'n', ['9'] = 'ne', ['Plus'] = 'd', ['Minus'] = 'u'}
+mapAddOns.keysEnabled = false
+mapAddOns.keyIds = mapAddOns.keyIds or {}
+mapAddOns.roomIds = mapAddOns.roomIds or {}
+
+local function toggleMapKeys()
+    mapAddOns.keysEnabled = not mapAddOns.keysEnabled
+    if mapAddOns.keysEnabled then
+        for key, val in pairs(keys) do
+            table.insert(mapAddOns.keyIds, tempKey(mudlet.keymodifier.Keypad, mudlet.key[key],
+                string.format("raiseEvent('tempMapKey','%s')",val)))
+        end
+    else
+        for _,id in ipairs(mapAddOns.keyIds) do
+            killKey(id)
+        end
+        mapAddOns.keyIds = {}
+    end
+end
+
+local coordmap = {
+    n = {0,1,0},    ne = {1,1,0},   nw = {-1,1,0},  e = {1,0,0},    w = {-1,0,0},
+    s = {0,-1,0},   se = {1,-1,0},  sw = {-1,-1,0}, u = {0,0,1},    d = {0,0,-1},
+}
+
+local function shiftRooms(dir)
+    local dx,dy,dz = unpack(coordmap[dir])
+    for _,id in ipairs(mapAddOns.roomIds) do
+        local x,y,z = getRoomCoordinates(id)
+        setRoomCoordinates(id,x+dx,y+dy,z+dz)
+    end
+    updateMap()
+end
+
+function mapAddOns.eventHandler(event, mapEvent, ...)
+    if event == "mapAddOnEvent" then
+        if mapEvent == "safeDelete" then
+            safeDelete(arg)
+        elseif mapEvent == "shiftRooms" then
+            mapAddOns.roomIds = arg
+            toggleMapKeys()
+            cecho("\n&lt;green&gt;Please use the keypad keys to shift the selected rooms around.&lt;reset&gt;")
+        elseif mapEvent == "teleportHere" then
+            if arg.n == 1 then
+                centerview(arg[1])
+            else
+                cecho("\n&lt;red&gt;Cannot teleport to multiple rooms at once.&lt;reset&gt;")
+            end
+        end
+    elseif event == "tempMapKey" and mapAddOns.keysEnabled then
+        if mapEvent == "done" then
+            toggleMapKeys()
+            mapAddOns.roomIds = {}
+            cecho("\n&lt;green&gt;Room shifting completed.&lt;reset&gt;")
+        else
+            shiftRooms(mapEvent)
+        end
+    elseif event == "mapOpenEvent" then
+        local events = {safeDelete = "safe delete", shiftRooms = "shift rooms", teleportHere = "teleport here"}
+        local mapEvents = getMapEvents()
+        for event, name in pairs(events) do
+            if not mapEvents[event] then
+                addMapEvent(event, "mapAddOnEvent","",name)
+            end
+        end
+    end
+end
+
+registerAnonymousEventHandler("mapAddOnEvent","mapAddOns.eventHandler")
+registerAnonymousEventHandler("tempMapKey","mapAddOns.eventHandler")
+registerAnonymousEventHandler("mapOpenEvent","mapAddOns.eventHandler")</script>
+				<eventHandlerList />
+			</Script>
+		</ScriptGroup>
+		<ScriptGroup isActive="yes" isFolder="yes">
+			<name>RDMP</name>
+			<packageName></packageName>
+			<script>-- RED DRAGON MUD PROTOCOL --</script>
+			<eventHandlerList />
+			<Script isActive="yes" isFolder="no">
+				<name>doRDMP</name>
+				<packageName></packageName>
+				<script>RDMP.handlers = 
+		{
+			HEALTH = function() doRDMP_Health() end,
+			PARTY_HEALTH = function() doRDMP_PHealth() end,
+			MONSTER_HEALTH = function() doRDMP_MHealth() end,
+			TARGET_DEATH = function() doRDMP_TDeath() end,
+			MONSTER_DEATH = function() doRDMP_MDeath() end,
+			default = function() doRDMP_Default() end
+		}
+
+function doRDMP(data)
+	RDMP.line = data
+	RDMP.args = data:split(" ")
+	switch(RDMP.args[2], RDMP.handlers)()
+end
+
+function doRDMP_Default()
+	display(RDMP.args)
+end
+
+function doRDMP_Health()
+	--display(RDMP.args)
+	Character["Hp"] = {Current = tonumber(RDMP.args[3]), Max = tonumber(RDMP.args[4])}
+	Character["Sp"] = {Current = tonumber(RDMP.args[5]), Max = tonumber(RDMP.args[6])}
+	Character["Ep"] = {Current = tonumber(RDMP.args[7]), Max = tonumber(RDMP.args[8])}
+	Character["Hunger"] = tonumber(RDMP.args[9])
+	update_statusbars()
+end
+
+function doRDMP_PHealth()
+	--display(RDMP.args)
+	stringArray = {}
+	for i=3,#RDMP.args do	
+    table.insert(stringArray, RDMP.args[i])
+  end
+	string = table.concat(stringArray, " ")
+	selectCurrentLine()
+	copy()
+	appendBuffer("ChatPartyStatusConsole")
+end
+
+function doRDMP_MHealth()
+	--display(RDMP.args)
+	
+	if #RDMP.args == 4 then
+		enemyName = RDMP.args[3]
+		Character.Enemy = enemyName
+	elseif #RDMP.args &gt; 4 then
+		enemyName = {}
+		for i=3,#RDMP.args-1 do	
+    	table.insert(enemyName, RDMP.args[i])
+  	end
+		Character.Enemy = table.concat(enemyName, " ")
+	end
+	enemyHp = RDMP.args[#RDMP.args]
+	Character.EHp = tonumber(enemyHp)
+	GUI.EHpBar:setValue(Character.EHp)
+	GUI.EHpBarLabel:echo("&lt;b&gt;"..Character.Enemy.." ("..Character.EHp.."%)&lt;/b&gt;")
+end
+
+function doRDMP_TDeath()
+	Character.Enemy = "No Enemy"
+	Character.EHp = 0
+	GUI.EHpBar:setValue(Character.EHp)
+	GUI.EHpBarLabel:echo("&lt;b&gt;"..Character.Enemy.." ("..Character.EHp.."%)&lt;/b&gt;")
+end
+
+function doRDMP_MDeath()
+	--[[stringArray = {}
+	for i=3,#RDMP.args do	
+    table.insert(stringArray, RDMP.args[i])
+  end
+	string = table.concat(stringArray, " ")
+	send("p' "..string)]]
+end</script>
+				<eventHandlerList />
+			</Script>
+		</ScriptGroup>
+		<ScriptGroup isActive="yes" isFolder="yes">
 			<name>_Init</name>
 			<packageName></packageName>
 			<script></script>
@@ -3131,129 +3386,6 @@ registerAnonymousEventHandler("sysDisconnectionEvent", "GUI.disconnected")</scri
 			</ScriptGroup>
 		</ScriptGroup>
 		<ScriptGroup isActive="yes" isFolder="yes">
-			<name>Nav</name>
-			<packageName></packageName>
-			<script>-------------------------------------------------
---         Put your Lua functions here.        --
---                                             --
--- Note that you can also use external scripts --
--------------------------------------------------
-</script>
-			<eventHandlerList />
-			<Script isActive="yes" isFolder="no">
-				<name>Mapping Helper by JorMox</name>
-				<packageName></packageName>
-				<script>mapAddOns = mapAddOns or {}
-
-local function safeDelete(ids)
-    for _, id in ipairs(ids) do
-        id = tonumber(id)
-        local rooms = {}
-        for _, room in ipairs(getAllRoomEntrances(id)) do
-            for dir, exit in pairs(getRoomExits(room)) do
-                if exit == id then
-                    if rooms[room] then
-                        if type(rooms[room]) == "table" then
-                            table.insert(rooms[room],dir)
-                        else
-                            rooms[room] = {rooms[room], dir}
-                        end
-                    else
-                        rooms[room] = dir
-                    end
-                end
-            end
-        end
-        deleteRoom(id)
-        for rid, dirs in pairs(rooms) do
-            if type(dirs) == "table" then
-                for _, dir in ipairs(dirs) do
-                    setExitStub(rid, dir, true)
-                end
-            else
-                setExitStub(rid, dirs, true)
-            end
-        end
-    end
-    updateMap()
-end
-
-local keys = {['1'] = 'sw', ['2'] = 's', ['3'] = 'se', ['4'] = 'w', ['5'] = 'done', ['6'] = 'e', ['7'] = 'nw',
-    ['8'] = 'n', ['9'] = 'ne', ['Plus'] = 'd', ['Minus'] = 'u'}
-mapAddOns.keysEnabled = false
-mapAddOns.keyIds = mapAddOns.keyIds or {}
-mapAddOns.roomIds = mapAddOns.roomIds or {}
-
-local function toggleMapKeys()
-    mapAddOns.keysEnabled = not mapAddOns.keysEnabled
-    if mapAddOns.keysEnabled then
-        for key, val in pairs(keys) do
-            table.insert(mapAddOns.keyIds, tempKey(mudlet.keymodifier.Keypad, mudlet.key[key],
-                string.format("raiseEvent('tempMapKey','%s')",val)))
-        end
-    else
-        for _,id in ipairs(mapAddOns.keyIds) do
-            killKey(id)
-        end
-        mapAddOns.keyIds = {}
-    end
-end
-
-local coordmap = {
-    n = {0,1,0},    ne = {1,1,0},   nw = {-1,1,0},  e = {1,0,0},    w = {-1,0,0},
-    s = {0,-1,0},   se = {1,-1,0},  sw = {-1,-1,0}, u = {0,0,1},    d = {0,0,-1},
-}
-
-local function shiftRooms(dir)
-    local dx,dy,dz = unpack(coordmap[dir])
-    for _,id in ipairs(mapAddOns.roomIds) do
-        local x,y,z = getRoomCoordinates(id)
-        setRoomCoordinates(id,x+dx,y+dy,z+dz)
-    end
-    updateMap()
-end
-
-function mapAddOns.eventHandler(event, mapEvent, ...)
-    if event == "mapAddOnEvent" then
-        if mapEvent == "safeDelete" then
-            safeDelete(arg)
-        elseif mapEvent == "shiftRooms" then
-            mapAddOns.roomIds = arg
-            toggleMapKeys()
-            cecho("\n&lt;green&gt;Please use the keypad keys to shift the selected rooms around.&lt;reset&gt;")
-        elseif mapEvent == "teleportHere" then
-            if arg.n == 1 then
-                centerview(arg[1])
-            else
-                cecho("\n&lt;red&gt;Cannot teleport to multiple rooms at once.&lt;reset&gt;")
-            end
-        end
-    elseif event == "tempMapKey" and mapAddOns.keysEnabled then
-        if mapEvent == "done" then
-            toggleMapKeys()
-            mapAddOns.roomIds = {}
-            cecho("\n&lt;green&gt;Room shifting completed.&lt;reset&gt;")
-        else
-            shiftRooms(mapEvent)
-        end
-    elseif event == "mapOpenEvent" then
-        local events = {safeDelete = "safe delete", shiftRooms = "shift rooms", teleportHere = "teleport here"}
-        local mapEvents = getMapEvents()
-        for event, name in pairs(events) do
-            if not mapEvents[event] then
-                addMapEvent(event, "mapAddOnEvent","",name)
-            end
-        end
-    end
-end
-
-registerAnonymousEventHandler("mapAddOnEvent","mapAddOns.eventHandler")
-registerAnonymousEventHandler("tempMapKey","mapAddOns.eventHandler")
-registerAnonymousEventHandler("mapOpenEvent","mapAddOns.eventHandler")</script>
-				<eventHandlerList />
-			</Script>
-		</ScriptGroup>
-		<ScriptGroup isActive="yes" isFolder="yes">
 			<name>Party</name>
 			<packageName></packageName>
 			<script>-------------------------------------------------
@@ -3264,92 +3396,7 @@ registerAnonymousEventHandler("mapOpenEvent","mapAddOns.eventHandler")</script>
 </script>
 			<eventHandlerList />
 		</ScriptGroup>
-		<ScriptGroup isActive="yes" isFolder="yes">
-			<name>RDMP</name>
-			<packageName></packageName>
-			<script>-- RED DRAGON MUD PROTOCOL --</script>
-			<eventHandlerList />
-			<Script isActive="yes" isFolder="no">
-				<name>doRDMP</name>
-				<packageName></packageName>
-				<script>RDMP.handlers = 
-		{
-			HEALTH = function() doRDMP_Health() end,
-			PARTY_HEALTH = function() doRDMP_PHealth() end,
-			MONSTER_HEALTH = function() doRDMP_MHealth() end,
-			TARGET_DEATH = function() doRDMP_TDeath() end,
-			MONSTER_DEATH = function() doRDMP_MDeath() end,
-			default = function() doRDMP_Default() end
-		}
 
-function doRDMP(data)
-	RDMP.line = data
-	RDMP.args = data:split(" ")
-	switch(RDMP.args[2], RDMP.handlers)()
-end
-
-function doRDMP_Default()
-	display(RDMP.args)
-end
-
-function doRDMP_Health()
-	--display(RDMP.args)
-	Character["Hp"] = {Current = tonumber(RDMP.args[3]), Max = tonumber(RDMP.args[4])}
-	Character["Sp"] = {Current = tonumber(RDMP.args[5]), Max = tonumber(RDMP.args[6])}
-	Character["Ep"] = {Current = tonumber(RDMP.args[7]), Max = tonumber(RDMP.args[8])}
-	Character["Hunger"] = tonumber(RDMP.args[9])
-	update_statusbars()
-end
-
-function doRDMP_PHealth()
-	--display(RDMP.args)
-	stringArray = {}
-	for i=3,#RDMP.args do	
-    table.insert(stringArray, RDMP.args[i])
-  end
-	string = table.concat(stringArray, " ")
-	selectCurrentLine()
-	copy()
-	appendBuffer("ChatPartyStatusConsole")
-end
-
-function doRDMP_MHealth()
-	--display(RDMP.args)
-	
-	if #RDMP.args == 4 then
-		enemyName = RDMP.args[3]
-		Character.Enemy = enemyName
-	elseif #RDMP.args &gt; 4 then
-		enemyName = {}
-		for i=3,#RDMP.args-1 do	
-    	table.insert(enemyName, RDMP.args[i])
-  	end
-		Character.Enemy = table.concat(enemyName, " ")
-	end
-	enemyHp = RDMP.args[#RDMP.args]
-	Character.EHp = tonumber(enemyHp)
-	GUI.EHpBar:setValue(Character.EHp)
-	GUI.EHpBarLabel:echo("&lt;b&gt;"..Character.Enemy.." ("..Character.EHp.."%)&lt;/b&gt;")
-end
-
-function doRDMP_TDeath()
-	Character.Enemy = "No Enemy"
-	Character.EHp = 0
-	GUI.EHpBar:setValue(Character.EHp)
-	GUI.EHpBarLabel:echo("&lt;b&gt;"..Character.Enemy.." ("..Character.EHp.."%)&lt;/b&gt;")
-end
-
-function doRDMP_MDeath()
-	--[[stringArray = {}
-	for i=3,#RDMP.args do	
-    table.insert(stringArray, RDMP.args[i])
-  end
-	string = table.concat(stringArray, " ")
-	send("p' "..string)]]
-end</script>
-				<eventHandlerList />
-			</Script>
-		</ScriptGroup>
 		<ScriptGroup isActive="yes" isFolder="yes">
 			<name>Skills</name>
 			<packageName></packageName>
@@ -3489,52 +3536,6 @@ GUI.Commands.Spells = GUI.Commands.Spells or {
 		send(cmd)
 	end
 end</script>
-				<eventHandlerList />
-			</Script>
-		</ScriptGroup>
-		<ScriptGroup isActive="yes" isFolder="yes">
-			<name>Hotkeys</name>
-			<packageName></packageName>
-			<script>-------------------------------------------------
---         Put your Lua functions here.        --
---                                             --
--- Note that you can also use external scripts --
--------------------------------------------------
-</script>
-			<eventHandlerList />
-			<Script isActive="yes" isFolder="no">
-				<name>doHotkey</name>
-				<packageName></packageName>
-				<script>Hotkeys = Hotkeys or {
-	[1] = {1, "sw", {}},
-	[2] = {2, "sb", {"myself"}},
-	[3] = {3, "dance", {}},
-	
-}
-
-HotKey0 = {3, "cast stop", {}}
-
-function doHotkey(index)
-	echo("Hotkey "..index)
-  if index == 0 then
-  	local func = Hotkey0[1]
-  	local cmd = Hotkey0[2]
-  	local args = Hotkey0[3]
-		hotkey_functions[func](cmd, args)
-  else
-  	local func = Hotkeys[index][1]
-  	local cmd = Hotkeys[index][2]
-  	local args = Hotkeys[index][3]
-		hotkey_functions[func](cmd, args)
-	end
-end
-
-hotkey_functions={
-	[1] = function(cmd, args) castSpell(spellAlias(cmd), args) end,
-	[2] = function(cmd, args) useSkill(skillAlias(cmd), args) end,
-	[3] = function(cmd, args) send(cmd) end,
-
-}</script>
 				<eventHandlerList />
 			</Script>
 		</ScriptGroup>

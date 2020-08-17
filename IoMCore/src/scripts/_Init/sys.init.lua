@@ -4,24 +4,31 @@
 if not json then
 	cecho("<green>json<DimGrey>:<white> Loading modules...\n")
 
-	local path = package.path
-	local homeDirectory = getMudletHomeDir():gsub("\\", "/")
+	local resourcesURL = ""
+	homeDirectory = getMudletHomeDir():gsub("\\", "/")
+	local homeDirectoryTable = homeDirectory:split("/profiles")
+	resourceDirectory = string.format("%s/%s", homeDirectoryTable[1], [[resources/IoMCore]])
 	
-	local luaDirectory = string.format("%s/%s", homeDirectory, [[IoMCore/libraries/?.lua]])
-	local initDirectory = string.format("%s/%s", homeDirectory, [[IoMCore/libraries/?/init.lua]])
-	package.path = string.format("%s;%s;%s", luaDirectory, initDirectory, path)
+	local fileInfo = lfs.attributes(resourceDirectory)
+	if fileInfo and fileInfo.mode == "directory" then
+		--display(fileInfo) -- to see the detailed information
+	else
+		echo("The Resource path is invalid (file/directory doesn't exist)...")
+		echo("Downloading Resources from: "..resourcesURL)
+	end
+
+	local path = package.path	
+	local luaDirectory = string.format("%s/%s", resourceDirectory, [[libraries/?.lua]])
+	package.path = string.format("%s;%s;%s", resourceDirectory, luaDirectory, path)
 
 	local okay, content = pcall(require, "json")
-	package.path = path
-
 	if okay then
 		json = content
 	else
 		cecho(string.format("<firebrick>json<DimGrey>:<white>  Error loading module: %s.\n", content))
 	end
-
 	if json then
-		cecho("<green>json<DimGrey>:<white> Modules successfully loaded.\n")
+		cecho("<green>json<DimGrey>:<white> Resources successfully loaded.\n")
 		tempTimer( 1, function () raiseEvent( "jsonLoadEvent" ) end )
 	end
 end

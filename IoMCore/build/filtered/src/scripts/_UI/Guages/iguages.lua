@@ -22,7 +22,7 @@ end
 function demonnic.iGauge:setType(bartype)
   self.bartype = bartype
 	self.front:setStyleSheet([[
-	  border-image: url(]]..getMudletHomeDir()..'/images/alphas/'..self.bartype..[[.png);
+	  border-image: url(]]..resourceDirectory..'/images/alphas/'..self.bartype..[[.png);
 	]])
 end	
 		

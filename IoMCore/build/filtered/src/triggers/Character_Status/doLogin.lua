@@ -1,10 +1,10 @@
 loginText = "do "
     if Character.RDMPStatus == "ON" then
         loginText = loginText .. "RDMP ON ".. Character.RDMPCode ..";"
-        enableTrigger("RDMP Zero")
+        enableTrigger("RDMP_Zero")
         enableTrigger("RDMP")
     elseif Character.RDMPStatus == "OFF" then
-        disableTrigger("RDMP Zero")
+        disableTrigger("RDMP_Zero")
         disableTrigger("RDMP")
     end
     loginText = loginText .. "verbose on;"

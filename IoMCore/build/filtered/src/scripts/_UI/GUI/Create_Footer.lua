@@ -182,19 +182,19 @@ function GUI.CreateFooter()
     name = "BoxRoom",
   },GUI.FooterBottom)
   GUI.BoxRoom:setStyleSheet(GUI.BoxFooterCSS:getCSS())
-  GUI.BoxRoom:echo("<center><font size=\""..(GUI.FontSize+2).."\">ðŸ“?</font> <b><font size=\""..GUI.FontSize.."\">Room</font></b>")
+  GUI.BoxRoom:echo("<center><font size=\""..(GUI.FontSize+2).."\">&#x1F4CD;</font> <b><font size=\""..GUI.FontSize.."\">Room</font></b>")
   
   GUI.BoxArea = Geyser.Label:new({
     name = "BoxArea",
   },GUI.FooterBottom)
   GUI.BoxArea:setStyleSheet(GUI.BoxFooterCSS:getCSS())
-  GUI.BoxArea:echo("<center><font size=\""..(GUI.FontSize+2).."\">ðŸ?°</font> <b><font size=\""..GUI.FontSize.."\">Area</font></b>")
+  GUI.BoxArea:echo("<center><font size=\""..(GUI.FontSize+2).."\">&#x1F3F0;</font> <b><font size=\""..GUI.FontSize.."\">Area</font></b>")
   
   GUI.BoxExits = Geyser.Label:new({
     name = "BoxExits",
   },GUI.FooterBottom)
   GUI.BoxExits:setStyleSheet(GUI.BoxFooterCSS:getCSS())
-  GUI.BoxExits:echo("<center><font size=\""..(GUI.FontSize+2).."\">ðŸšª</font> <b><font size=\""..GUI.FontSize.."\">Exits</font></b>")
+  GUI.BoxExits:echo("<center><font size=\""..(GUI.FontSize+2).."\">&#x1f6aa;</font> <b><font size=\""..GUI.FontSize.."\">Exits</font></b>")
 end
 
 function update_statusbars()
