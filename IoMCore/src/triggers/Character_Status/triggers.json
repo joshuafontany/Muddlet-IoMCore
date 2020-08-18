@@ -208,30 +208,7 @@
         ]
       },
       {
-        "name": "Login_Stats_Data",
-        "isActive": "yes",
-        "multiline": "yes",
-        "multielineDelta": "2",
-        "matchall": "no",
-        "filter": "no",
-        "fireLength": "0",
-        "soundFile": "",
-        "highlight": "no",
-        "highlightFG": "#ff0000",
-        "highlightBG": "#ffff00",
-        "patterns": [
-          {
-            "pattern": "^Stats:$",
-            "type": "regex"
-          },
-          {
-            "pattern": "^\\sStr:\\s\\d+\\s+Dex:\\s\\d+\\s+Con:\\s\\d+\\s+Sta:\\s\\d+\\s+Int:\\s\\d+\\s+Wis:\\s\\d+\\s+Cha:\\s\\d+$",
-            "type": "regex"
-          }
-        ]
-      },
-      {
-        "name": "Login_Prompt_Test",
+        "name": "Character.Score.Capture_Exp_Explored",
         "isActive": "yes",
         "multiline": "no",
         "multielineDelta": "0",
@@ -244,8 +221,301 @@
         "highlightBG": "#ffff00",
         "patterns": [
           {
-            "pattern": "return isPrompt()",
-            "type": "lua"
+            "pattern": "^\\|\\sExperience\\s*:\\s*([\\w,]+)\\s+Explored\\s*:\\s*([\\w\\.]+)%\\s*\\(([\\w\\.]+)%\\)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Next_Level_Rooms",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\sNext\\slevel\\s*:\\s*([\\w,]+)\\s+Rooms\\sExplored\\s*:\\s*([\\w,]+)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Guild_Level_Gold",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\sGuild\\sLevel\\s*:\\s*([\\w,]+)\\s+Gold\\son\\shand\\s*:\\s*([\\w,]+)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Gold_in_Bank",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\sTo\\sNext\\sLevel\\s*:\\s*[\\w,]+\\s+Gold\\sin\\sbank\\s*:\\s*([\\w,]+)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_AC",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\sStrength\\s*:\\s*(\\d+)\\s*\\|\\sHit\\sPoints\\s*:\\s*(\\d+)\\s\\(\\s*(\\d+)\\)\\s\\|\\sAC\\s*:\\s*(\\w+)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Size",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\sDexterity\\s*:\\s*(\\d+)\\s*\\|\\sSpell\\sPoints\\s*:\\s*(\\d+)\\s\\(\\s*(\\d+)\\)\\s\\|\\sSize\\s*:\\s*([\\w'\"]*)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Weight",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\sConstitution\\s*:\\s*(\\d+)\\s*\\|\\sEndurance\\sPts\\.\\s*:\\s*(\\d+)\\s\\(\\s*(\\d+)\\)\\s\\|\\sWeight\\s*:\\s*(\\d+)\\slb\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Stealth",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\sStamina\\s*:\\s*(\\d+)\\s*\\|\\sHunger\\s*:\\s*(\\w+)\\s*\\|\\sStealth\\s*:\\s*(\\d+)%\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Hiding",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\sIntelligence\\s*:\\s*(\\d+)\\s*\\|\\sWimpy\\s*:\\s*(\\d+)%\\s*\\|\\sHiding\\s*:\\s*(\\w+)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Poisoned",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\sWisdom\\s*:\\s*(\\d+)\\s*\\|\\sGrowth\\s*:\\s*(\\w+)\\s*\\|\\sPoisoned\\s*:\\s*(\\w+)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_TaskPts",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|\\sCharisma\\s*:\\s*(\\d+)\\s*\\|\\sAlignment\\s*:([\\w\\s\\.]+)\\|\\sTaskPts\\.\\s*:\\s*(\\w+)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Mail",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|[^\\|]*\\|\\sMail\\s*:\\s*(\\d+)\\/(\\d+)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Kills",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|[^\\|]*\\|\\s*Kills\\s*:\\s*([\\d,]+)\\s*\\|$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Guilds",
+        "isActive": "no",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\|[^-]\\s*(?:(?:alpha|gamma|bravo|omicron)\\s*:\\s*)?([^\\|`]*)(?:\\||`)(?:.*|)?$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Mute_Score_Data",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^,-",
+            "type": "regex"
+          },
+          {
+            "pattern": "^\\|",
+            "type": "regex"
+          },
+          {
+            "pattern": "^`-",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Score.Capture_Disable",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^`-+'$",
+            "type": "regex"
           }
         ]
       }
@@ -356,6 +626,107 @@
         "pattern": "^\\s{3}\\|\\s+([\\w\\s()]+?)?\\s{2,}\\|\\s{3}$",
         "type": "regex"
       }
+    ],
+    "children": [
+      {
+        "name": "Character.Eq.Eq_Header",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\s{3}-+\\s{3}$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Eq.Get_Weapons",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\s{3}\\|\\s+([\\w\\s]*)\\s\\(([\\w\\s]*)\\)\\s*\\|\\s{3}$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Eq.Eq_Spacer",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\s{3}\\|\\s+\\|\\s{3}$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Eq.Get_Armor",
+        "isActive": "no",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\s{3}\\|\\s+([\\w\\s]+)\\s([\\w\\s()]+)\\|\\s{3}$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Eq.End_Eq",
+        "isActive": "no",
+        "multiline": "yes",
+        "multielineDelta": "1",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\s{3}\\|\\s+([\\w\\s()]+?)?\\s{2,}\\|\\s{3}$",
+            "type": "regex"
+          },
+          {
+            "pattern": "^\\s{3}-+\\s{3}$",
+            "type": "regex"
+          }
+        ]
+      }
     ]
   },
   {
@@ -394,6 +765,46 @@
         "pattern": "^(Weight\\s\\(in\\slbs\\):)\\sYou\\[\\d+\\]\\s\\+\\sEQ\\[\\d+\\]\\s=\\sTotal\\[\\d+\\],\\sCapacity\\[\\d+%\\]$",
         "type": "regex"
       }
+    ],
+    "children": [
+      {
+        "name": "Character.Inventory.Inventory_Header",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\s+\\[\\+\\-\\+\\s([^+]+)\\+\\-\\+\\]$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Inventory.Inventory_Item",
+        "isActive": "yes",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\((\\d+)\\)\\s+(.+)$",
+            "type": "regex"
+          }
+        ]
+      }
     ]
   },
   {
@@ -417,6 +828,88 @@
         "pattern": "^-=-=-\\|\\s([\\w\\s]+)\\s\\|(?:-=)+-$",
         "type": "regex"
       }
+    ],
+    "children": [
+      {
+        "name": "Character.Skills.Skills_Guild_Header",
+        "isActive": "no",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^-=-=-\\|\\s([\\w\\s]+)\\s\\|(?:-=)+-$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Skills.Skills_Line",
+        "isActive": "no",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\s+([\\w\\s]+)\\s:\\s+(\\d+)%\\s+\\|\\s*(?:([\\w\\s]+)\\s:\\s+(\\d+)%\\s*)?$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Skills.Skills_End",
+        "isActive": "no",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^(?:-=)+-$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Skills.Skills_End_Test",
+        "isActive": "no",
+        "multiline": "yes",
+        "multielineDelta": "1",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^(?:-=)+-$",
+            "type": "regex"
+          },
+          {
+            "pattern": "return isPrompt()",
+            "type": "lua"
+          }
+        ]
+      }
     ]
   },
   {
@@ -439,6 +932,88 @@
       {
         "pattern": "^-=-=-\\|\\s([\\w\\s]+)\\s\\|(?:-=)+-$",
         "type": "regex"
+      }
+    ],
+    "children": [
+      {
+        "name": "Character.Spells.Spells_Guild_Header",
+        "isActive": "no",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^-=-=-\\|\\s([\\w\\s]+)\\s\\|(?:-=)+-$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Spells.Spells_Line",
+        "isActive": "no",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^\\s+([\\w\\s]+)\\s:\\s+(\\d+)%\\s+\\|\\s*(?:([\\w\\s]+)\\s:\\s+(\\d+)%\\s*)?$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Spells.Spells_End",
+        "isActive": "no",
+        "multiline": "no",
+        "multielineDelta": "0",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^(?:-=)+-$",
+            "type": "regex"
+          }
+        ]
+      },
+      {
+        "name": "Character.Spells.Spells_End_Test",
+        "isActive": "no",
+        "multiline": "yes",
+        "multielineDelta": "1",
+        "matchall": "no",
+        "filter": "no",
+        "fireLength": "0",
+        "soundFile": "",
+        "highlight": "no",
+        "highlightFG": "#ff0000",
+        "highlightBG": "#ffff00",
+        "patterns": [
+          {
+            "pattern": "^(?:-=)+-$",
+            "type": "regex"
+          },
+          {
+            "pattern": "return isPrompt()",
+            "type": "lua"
+          }
+        ]
       }
     ]
   }

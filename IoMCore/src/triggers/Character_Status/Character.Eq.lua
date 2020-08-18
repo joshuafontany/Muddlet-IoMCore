@@ -1,1 +1,1 @@
-enableTrigger("Eq_Header")
+enableTrigger("Character.Eq.Eq_Header")
