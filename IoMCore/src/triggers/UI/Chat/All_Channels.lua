@@ -1,5 +1,5 @@
 if GUI.CaptureChat == true then
-    --echo("/n"..tostring(table.contains(GUI.Channels, matches[3])))
+    echo("/n"..tostring(table.contains(GUI.Channels, matches[3])))
     if matches[3] ~= Party.Name and table.contains(GUI.Channels, matches[3]) and not table.contains(GUI.CustomChannels, matches[3]) then
         selectString(matches[2], 1)
         setBold(true)
